@@ -2,7 +2,7 @@ import {
   InferModel, text, foreignKey, integer, sqliteTable, numeric,
 } from 'drizzle-orm-sqlite';
 
-export const customers = sqliteTable('customers', {
+export const customers = sqliteTable('customer', {
   id: text('id').primaryKey(),
   companyName: text('company_name').notNull(),
   contactName: text('contact_name').notNull(),
@@ -18,7 +18,7 @@ export const customers = sqliteTable('customers', {
 
 export type Customer = InferModel<typeof customers>;
 
-export const employees = sqliteTable('employees', {
+export const employees = sqliteTable('employee', {
   id: text('id').primaryKey(),
   lastName: text('last_name').notNull(),
   firstName: text('first_name'),
@@ -33,17 +33,17 @@ export const employees = sqliteTable('employees', {
   homePhone: text('home_phone').notNull(),
   extension: integer('extension').notNull(),
   notes: text('notes').notNull(),
-  recipientId: text('recipient_id'),
+  reportsTo: text('reports_to'),
 }, (table) => ({
-  recipientFk: foreignKey(() => ({
-    columns: [table.recipientId],
+  reportsToFk: foreignKey(() => ({
+    columns: [table.reportsTo],
     foreignColumns: [table.id],
   })),
 }));
 
 export type Employee = InferModel<typeof employees>;
 
-export const orders = sqliteTable('orders', {
+export const orders = sqliteTable('order', {
   id: text('id').primaryKey(),
   orderDate: integer('order_date', { mode: 'timestamp' }).notNull(),
   requiredDate: integer('required_date', { mode: 'timestamp' }).notNull(),
@@ -65,7 +65,7 @@ export const orders = sqliteTable('orders', {
 
 export type Order = InferModel<typeof orders>;
 
-export const suppliers = sqliteTable('suppliers', {
+export const suppliers = sqliteTable('supplier', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   companyName: text('company_name').notNull(),
   contactName: text('contact_name').notNull(),
@@ -80,10 +80,10 @@ export const suppliers = sqliteTable('suppliers', {
 
 export type Supplier = InferModel<typeof suppliers>;
 
-export const products = sqliteTable('products', {
+export const products = sqliteTable('product', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  quantityPerUnit: text('qt_per_unit').notNull(),
+  quantityPerUnit: text('quantity_per_unit').notNull(),
   unitPrice: numeric('unit_price').notNull(),
   unitsInStock: integer('units_in_stock').notNull(),
   unitsOnOrder: integer('units_on_order').notNull(),
@@ -96,7 +96,7 @@ export const products = sqliteTable('products', {
 
 export type Product = InferModel<typeof products>;
 
-export const details = sqliteTable('order_details', {
+export const details = sqliteTable('order_detail', {
   unitPrice: integer('unit_price').notNull(),
   quantity: integer('quantity').notNull(),
   discount: numeric('discount').notNull(),
