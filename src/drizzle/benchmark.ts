@@ -82,6 +82,7 @@ bench("Drizzle-ORM Orders: getAll", async () => {
         sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
     })
     .leftJoin(details, eq(orders.id, details.orderId))
+    .orderBy()
     .execute();
 });
 

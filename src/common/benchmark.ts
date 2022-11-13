@@ -13,12 +13,20 @@ import {
 } from "../drizzle/schema";
 import { placeholder } from "drizzle-orm/sql";
 import { customerIds, searches } from "./meta";
-import knex from "knex";
+import knx from "knex";
+import { DataSource } from "typeorm";
+import { Customer } from "@/typeorm/entities/customers";
+import { Employee } from "@/typeorm/entities/employees";
+import { Supplier } from "@/typeorm/entities/suppliers";
+import { Order } from "@/typeorm/entities/orders";
+import { Product } from "@/typeorm/entities/products";
+import { Detail } from "@/typeorm/entities/details";
+import { PrismaClient } from "@prisma/client";
 
 const instance = new Database("nw.sqlite");
 const drizzle = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
-const db = knex({
+const knex = knx({
   client: "better-sqlite3",
   // client: "sqlite3",
   connection: {
@@ -26,6 +34,14 @@ const db = knex({
   },
   useNullAsDefault: true,
 });
+
+const typeorm = new DataSource({
+  type: "sqlite",
+  database: "nw.sqlite",
+  entities: [Customer, Employee, Supplier, Order, Product, Detail],
+});
+
+const prisma = new PrismaClient();
 
 group("select * from customer", () => {
   bench("b3", () => {
@@ -47,7 +63,16 @@ group("select * from customer", () => {
   });
 
   bench("knex", async () => {
-    await db("customer").select();
+    await knex("customer");
+  });
+
+  const repo = typeorm.getRepository(Customer);
+  bench("typeorm", async () => {
+    await repo.find();
+  });
+
+  bench("prisma", async () => {
+    await prisma.customer.findMany();
   });
 });
 
@@ -74,7 +99,7 @@ group("select * from customer where id = ?", () => {
 
   const prepared = drizzle
     .select(customers)
-    .where(eq(customers.id, placeholder("userId")))
+    .where(eq(customers.id, ":userId"))
     .prepare();
 
   bench("drizzle:p", () => {
@@ -85,7 +110,23 @@ group("select * from customer where id = ?", () => {
 
   bench("knex", async () => {
     for (let id of customerIds) {
-      await db("customer").where({ id }).first();
+      await knex("customer").where({ id });
+    }
+  });
+  const repo = typeorm.getRepository(Customer);
+  bench("typeorm", async () => {
+    for (let id of customerIds) {
+      await repo.createQueryBuilder().where("id = :id", { id }).getOne();
+    }
+  });
+
+  bench("prisma", async () => {
+    for (let id of customerIds) {
+      await prisma.customer.findMany({
+        where: {
+          id,
+        },
+      });
     }
   });
 });
@@ -114,27 +155,57 @@ group("select * from customer where company_name like ?", () => {
 
   bench("knex", async () => {
     for (const it of searches) {
-      await db("customer")
-        .whereRaw("company_name LIKE ?", [`%${it}%`])
-        .select();
+      await knex("customer").whereRaw("lower(company_name) LIKE ?", [`%${it}%`]);
+    }
+  });
+
+  const repo = typeorm.getRepository(Customer);
+  bench("typeorm", async () => {
+    for (const it of searches) {
+      await repo
+        .createQueryBuilder()
+        .where("lower(company_name) like :company", { company: `%${it}%` })
+        .getMany();
+    }
+  });
+
+  bench("prisma", async () => {
+    for (const it of searches) {
+      await prisma.customer.findMany({
+        where: {
+          companyName: {
+            contains: it,
+          },
+        },
+      });
     }
   });
 });
 
 const main = async () => {
+  await typeorm.initialize();
+
   await run();
+  process.exit(1);
 };
-// main();
+main();
 
 const test = async () => {
+  await typeorm.initialize();
+
   const drz = drizzle
     .select(customers)
     .where(sql`lower(${customers.companyName}) like ${placeholder("name")}`)
     .prepare();
-  console.log("drizzle:", drz.execute({ name: "%ha%" })[0]);
-  console.log("knex:",
-    await db("customer").whereRaw("lower(company_name) like %ha%")    
+
+  console.log(
+    typeorm
+      .getRepository(Customer)
+      .createQueryBuilder()
+      .where("company_name like :company")
+      .getSql()
   );
-  console.log(db("customer").whereRaw("lower(company_name) LIKE %ha%"))
+  // console.log(db("customer").whereRaw("lower(company_name) LIKE %ha%"))
+  process.exit(1);
 };
-test();
+// test();

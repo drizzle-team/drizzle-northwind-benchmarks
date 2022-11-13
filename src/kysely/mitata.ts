@@ -108,6 +108,7 @@ export const startKyselyOrmBenches = async () => {
         ).execute();
     }
   });
+  
   bench('Kysely ORM Orders: getInfo', async () => {
     for (const i of count) {
       await db.selectFrom('order_details')

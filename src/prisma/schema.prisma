@@ -6,111 +6,111 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:prisma.db"
+  url      = "file:../../nw.sqlite"
 }
 
 model Customer {
   id           String  @id()
-  companyName  String  @map("company_name") 
-  contactName  String  @map("contact_name") 
-  contactTitle String  @map("contact_title") 
-  address      String  
-  city         String  
-  postalCode   String? @map("postal_code") 
-  region       String? 
-  country      String  
-  phone        String  
-  fax          String? 
+  companyName  String  @map("company_name")
+  contactName  String  @map("contact_name")
+  contactTitle String  @map("contact_title")
+  address      String
+  city         String
+  postalCode   String? @map("postal_code")
+  region       String?
+  country      String
+  phone        String
+  fax          String?
   orders       Order[]
 
-  @@map("customers")
+  @@map("customer")
 }
 
 model Employee {
-  id              String     @id() 
-  lastName        String     @map("last_name") 
-  firstName       String?    @map("first_name") 
-  title           String     
-  titleOfCourtesy String     @map("title_of_courtesy") 
-  birthDate       String   @map("birth_date")
-  hireDate        String   @map("hire_date")
-  address         String     
-  city            String     
-  postalCode      String     @map("postal_code") 
-  country         String     
-  homePhone       String     @map("home_phone") 
+  id              Int     @id()
+  lastName        String     @map("last_name")
+  firstName       String?    @map("first_name")
+  title           String
+  titleOfCourtesy String     @map("title_of_courtesy")
+  birthDate       String     @map("birth_date")
+  hireDate        String     @map("hire_date")
+  address         String
+  city            String
+  postalCode      String     @map("postal_code")
+  country         String
+  homePhone       String     @map("home_phone")
   extension       Int
-  notes           String     
-  recipientId     String?    @map("recipient_id") 
-  recipient       Employee?  @relation("reports", fields: [recipientId], references: [id], onDelete: Cascade)
+  notes           String
+  reportsTo       Int?    @map("reports_to")
+  recipient       Employee?  @relation("reports", fields: [reportsTo], references: [id], onDelete: Cascade)
   reporters       Employee[] @relation("reports")
   orders          Order[]
 
-  @@map("employees")
+  @@map("employee")
 }
 
 model Order {
-  id             String    @id() 
-  orderDate      String  @map("order_date")
-  requiredDate   String  @map("required_date")
-  shippedDate    String? @map("shipped_date")
-  shipVia        Int       @map("ship_via")
-  freight        Decimal   
-  shipName       String    @map("ship_name") 
-  shipCity       String    @map("ship_city") 
-  shipRegion     String?   @map("ship_region") 
-  shipPostalCode String?   @map("ship_postal_code") 
-  shipCountry    String    @map("ship_country") 
-  customerId     String    @map("customer_id") 
-  employeeId     String    @map("employee_id") 
-  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  id             Int   @id()
+  orderDate      String   @map("order_date")
+  requiredDate   String   @map("required_date")
+  shippedDate    String?  @map("shipped_date")
+  shipVia        Int      @map("ship_via")
+  freight        Decimal
+  shipName       String   @map("ship_name")
+  shipCity       String   @map("ship_city")
+  shipRegion     String?  @map("ship_region")
+  shipPostalCode String?  @map("ship_postal_code")
+  shipCountry    String   @map("ship_country")
+  customerId     String   @map("customer_id")
+  employeeId     Int   @map("employee_id")
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   details        Detail[]
 
-  @@map("orders")
+  @@map("order")
 }
 
 model Detail {
-  unitPrice Decimal @map("unit_price") 
+  unitPrice Decimal @map("unit_price")
   quantity  Int
-  discount  Decimal 
-  orderId   String  @map("order_id") 
-  productId String  @map("product_id") 
+  discount  Decimal
+  orderId   Int  @map("order_id")
+  productId Int  @map("product_id")
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([orderId, productId])
-  @@map("order_details")
+  @@map("order_detail")
 }
 
 model Product {
-  id              String   @id() 
-  name            String   
-  quantityPerUnit String   @map("qt_per_unit") 
-  unitPrice       Decimal  @map("unit_price") 
+  id              Int   @id()
+  name            String
+  quantityPerUnit String   @map("quantity_per_unit")
+  unitPrice       Decimal  @map("unit_price")
   unitsInStock    Int      @map("units_in_stock")
   unitsOnOrder    Int      @map("units_on_order")
   reorderLevel    Int      @map("reorder_level")
   discontinued    Int
-  supplierId      String   @map("supplier_id") 
+  supplierId      Int   @map("supplier_id")
   details         Detail[]
   supplier        Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  @@map("products")
+  @@map("product")
 }
 
 model Supplier {
-  id           String    @id() 
-  companyName  String    @map("company_name") 
-  contactName  String    @map("contact_name") 
-  contactTitle String    @map("contact_title") 
-  address      String    
-  city         String    
-  region       String?   
-  postalCode   String    @map("postal_code") 
-  country      String    
-  phone        String    
+  id           Int    @id()
+  companyName  String    @map("company_name")
+  contactName  String    @map("contact_name")
+  contactTitle String    @map("contact_title")
+  address      String
+  city         String
+  region       String?
+  postalCode   String    @map("postal_code")
+  country      String
+  phone        String
   products     Product[]
 
-  @@map("suppliers")
+  @@map("supplier")
 }
