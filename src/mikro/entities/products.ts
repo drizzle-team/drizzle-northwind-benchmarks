@@ -2,10 +2,10 @@ import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property
 import { Supplier } from "./suppliers";
 import { Detail } from "./details";
 
-@Entity({ tableName: "products" })
+@Entity({ tableName: "product" })
 export class Product {
   @PrimaryKey()
-    id: string;
+    id: number;
 
   @Property({ fieldName: "name" })
     name: string;
@@ -29,7 +29,7 @@ export class Product {
     discontinued: number;
 
   @Property({ fieldName: "supplier_id" })
-    supplierId: string;
+    supplierId: number;
   @ManyToOne(() => Supplier)
     supplier: Supplier;
 

@@ -3,10 +3,10 @@ import { Customer } from "./customers";
 import { Detail } from "./details";
 import { Employee } from "./employees";
 
-@Entity({ tableName: "orders" })
+@Entity({ tableName: "order" })
 export class Order {
   @PrimaryKey()
-    id: string;
+    id: number;
 
   @Property({ fieldName: "order_date", columnType: "date" })
     orderDate: Date;
@@ -44,7 +44,7 @@ export class Order {
     customer: Customer;
 
   @Property({ fieldName: "employee_id" })
-    employeeId: string;
+    employeeId: number;
   @ManyToOne(() => Employee)
     employee: Employee;
 

@@ -1,10 +1,10 @@
 import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { Order } from "./orders";
 
-@Entity({ tableName: "employees" })
+@Entity({ tableName: "employee" })
 export class Employee {
   @PrimaryKey()
-    id: string;
+    id: number;
 
   @Property({ fieldName: "last_name" })
     lastName: string;
@@ -45,8 +45,8 @@ export class Employee {
   @Property({ fieldName: "notes", columnType: "text" })
     notes: string;
 
-  @Property({ fieldName: "recipient_id", columnType: "text", nullable: true })
-    recipientId?: string;
+  @Property({ fieldName: "recipient_id", nullable: true })
+    recipientId?: number;
   @ManyToOne(() => Employee)
     recipient?: Employee;
 

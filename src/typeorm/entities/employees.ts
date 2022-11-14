@@ -5,8 +5,8 @@ import { Order } from "./orders";
 
 @Entity({ name: "employee" })
 export class Employee {
-  @PrimaryColumn({ type: "varchar" })
-    id: string;
+  @PrimaryColumn({ type: "integer" })
+    id: number;
 
   @Column({ name: "last_name", type: "varchar" })
     lastName: string;
@@ -47,8 +47,8 @@ export class Employee {
   @Column({ name: "notes", type: "text" })
     notes: string;
 
-  @Column({ name: "reports_to", type: "varchar", nullable: true })
-    recipientId: string | null;
+  @Column({ name: "reports_to", type: "integer", nullable: true })
+    recipientId: number | null;
   @ManyToOne(() => Employee, (employee) => employee.recipient)
   @JoinColumn({ name: "reports_to" })
     recipient: Employee;

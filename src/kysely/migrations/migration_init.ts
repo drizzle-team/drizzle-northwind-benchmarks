@@ -2,7 +2,7 @@ import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
-    .createTable("customers")
+    .createTable("customer")
     .addColumn("id", "varchar", (col) => col.primaryKey())
     .addColumn("company_name", "varchar", (col) => col.notNull())
     .addColumn("contact_name", "varchar", (col) => col.notNull())
@@ -17,8 +17,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("employees")
-    .addColumn("id", "text", (col) => col.primaryKey())
+    .createTable("employee")
+    .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("last_name", "varchar", (col) => col.notNull())
     .addColumn("first_name", "varchar")
     .addColumn("title", "varchar", (col) => col.notNull())
@@ -32,7 +32,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("home_phone", "varchar", (col) => col.notNull())
     .addColumn("extension", "integer", (col) => col.notNull())
     .addColumn("notes", "text", (col) => col.notNull())
-    .addColumn("recipient_id", "text")
+    .addColumn("recipient_id", "integer")
     .addForeignKeyConstraint(
       "recipient_id_fk",
       ["recipient_id"],
@@ -48,8 +48,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("orders")
-    .addColumn("id", "varchar", (col) => col.primaryKey())
+    .createTable("order")
+    .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("order_date", "date", (col) => col.notNull())
     .addColumn("required_date", "date", (col) => col.notNull())
     .addColumn("shipped_date", "date")
@@ -68,7 +68,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
       (cb) => cb.onDelete("cascade"),
     )
-    .addColumn("employee_id", "varchar", (col) => col.notNull())
+    .addColumn("employee_id", "integer", (col) => col.notNull())
     .addForeignKeyConstraint(
       "employee_id_fk",
       ["employee_id"],
@@ -91,8 +91,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("suppliers")
-    .addColumn("id", "varchar", (col) => col.primaryKey())
+    .createTable("supplier")
+    .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("company_name", "varchar", (col) => col.notNull())
     .addColumn("contact_name", "varchar", (col) => col.notNull())
     .addColumn("contact_title", "varchar", (col) => col.notNull())
@@ -105,8 +105,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("products")
-    .addColumn("id", "varchar", (col) => col.primaryKey())
+    .createTable("product")
+    .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("name", "varchar", (col) => col.notNull())
     .addColumn("qt_per_unit", "varchar", (col) => col.notNull())
     .addColumn("unit_price", "decimal", (col) => col.notNull())
@@ -114,7 +114,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("units_on_order", "integer", (col) => col.notNull())
     .addColumn("reorder_level", "integer", (col) => col.notNull())
     .addColumn("discontinued", "integer", (col) => col.notNull())
-    .addColumn("supplier_id", "varchar", (col) => col.notNull())
+    .addColumn("supplier_id", "integer", (col) => col.notNull())
     .addForeignKeyConstraint(
       "supplier_id_fk",
       ["supplier_id"],
@@ -131,11 +131,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("order_details")
+    .createTable("order_detail")
     .addColumn("unit_price", "decimal", (col) => col.notNull())
     .addColumn("quantity", "integer", (col) => col.notNull())
     .addColumn("discount", "decimal", (col) => col.notNull())
-    .addColumn("order_id", "varchar", (col) => col.notNull())
+    .addColumn("order_id", "integer", (col) => col.notNull())
     .addForeignKeyConstraint(
       "order_id_fk",
       ["order_id"],
@@ -143,7 +143,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
       (cb) => cb.onDelete("cascade"),
     )
-    .addColumn("product_id", "varchar", (col) => col.notNull())
+    .addColumn("product_id", "integer", (col) => col.notNull())
     .addForeignKeyConstraint(
       "product_id_fk",
       ["product_id"],
@@ -167,10 +167,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable("order_details").execute();
-  await db.schema.dropTable("products").execute();
-  await db.schema.dropTable("suppliers").execute();
-  await db.schema.dropTable("orders").execute();
-  await db.schema.dropTable("employees").execute();
-  await db.schema.dropTable("customers").execute();
+  await db.schema.dropTable("order_detail").execute();
+  await db.schema.dropTable("product").execute();
+  await db.schema.dropTable("supplier").execute();
+  await db.schema.dropTable("order").execute();
+  await db.schema.dropTable("employee").execute();
+  await db.schema.dropTable("customer").execute();
 }

@@ -7,8 +7,8 @@ import { Employee } from "./employees";
 
 @Entity({ name: "order" })
 export class Order {
-  @PrimaryColumn({ type: "varchar" })
-    id: string;
+  @PrimaryColumn({ type: "integer" })
+    id: number;
 
   @Column({ name: "order_date", type: "date" })
     orderDate: Date;
@@ -46,8 +46,8 @@ export class Order {
   @JoinColumn({ name: "customer_id" })
     customer: Customer;
 
-  @Column({ name: "employee_id", type: "varchar" })
-    employeeId: string;
+  @Column({ name: "employee_id", type: "integer" })
+    employeeId: number;
   @ManyToOne(() => Employee, (employee) => employee.orders, { onDelete: "CASCADE" })
   @JoinColumn({ name: "employee_id" })
     employee: Employee;

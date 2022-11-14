@@ -19,7 +19,7 @@ export const customers = sqliteTable("customer", {
 export type Customer = InferModel<typeof customers>;
 
 export const employees = sqliteTable("employee", {
-  id: text("id").primaryKey(),
+  id: integer("id").primaryKey(),
   lastName: text("last_name").notNull(),
   firstName: text("first_name"),
   title: text("title").notNull(),
@@ -33,7 +33,7 @@ export const employees = sqliteTable("employee", {
   homePhone: text("home_phone").notNull(),
   extension: integer("extension").notNull(),
   notes: text("notes").notNull(),
-  reportsTo: text("reports_to"),
+  reportsTo: integer("reports_to"),
 }, (table) => ({
   reportsToFk: foreignKey(() => ({
     columns: [table.reportsTo],
@@ -44,7 +44,7 @@ export const employees = sqliteTable("employee", {
 export type Employee = InferModel<typeof employees>;
 
 export const orders = sqliteTable("order", {
-  id: text("id").primaryKey(),
+  id: integer("id").primaryKey(),
   orderDate: integer("order_date", { mode: "timestamp" }).notNull(),
   requiredDate: integer("required_date", { mode: "timestamp" }).notNull(),
   shippedDate: integer("shipped_date", { mode: "timestamp" }),
@@ -59,7 +59,7 @@ export const orders = sqliteTable("order", {
   customerId: text("customer_id").notNull()
     .references(() => customers.id, { onDelete: "cascade" }),
 
-  employeeId: text("employee_id").notNull()
+  employeeId: integer("employee_id").notNull()
     .references(() => employees.id, { onDelete: "cascade" }),
 });
 
@@ -90,21 +90,21 @@ export const products = sqliteTable("product", {
   reorderLevel: integer("reorder_level").notNull(),
   discontinued: integer("discontinued").notNull(),
 
-  supplierId: text("supplier_id").notNull()
+  supplierId: integer("supplier_id").notNull()
     .references(() => suppliers.id, { onDelete: "cascade" }),
 });
 
 export type Product = InferModel<typeof products>;
 
 export const details = sqliteTable("order_detail", {
-  unitPrice: integer("unit_price").notNull(),
+  unitPrice: numeric("unit_price").notNull(),
   quantity: integer("quantity").notNull(),
   discount: numeric("discount").notNull(),
 
-  orderId: text("order_id").notNull()
+  orderId: integer("order_id").notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
 
-  productId: text("product_id").notNull()
+  productId: integer("product_id").notNull()
     .references(() => products.id, { onDelete: "cascade" }),
 });
 

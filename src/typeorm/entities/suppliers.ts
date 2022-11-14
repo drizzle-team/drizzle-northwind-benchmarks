@@ -5,8 +5,8 @@ import { Product } from "./products";
 
 @Entity({ name: "supplier" })
 export class Supplier {
-  @PrimaryColumn({ type: "varchar" })
-    id: string;
+  @PrimaryColumn({ type: "integer" })
+    id: number;
 
   @Column({ name: "company_name", type: "varchar" })
     companyName: string;

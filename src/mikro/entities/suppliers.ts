@@ -1,10 +1,10 @@
 import { Cascade, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { Product } from "./products";
 
-@Entity({ tableName: "suppliers" })
+@Entity({ tableName: "supplier" })
 export class Supplier {
   @PrimaryKey()
-    id: string;
+    id: number;
 
   @Property({ fieldName: "company_name" })
     companyName: string;

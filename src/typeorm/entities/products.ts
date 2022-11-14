@@ -11,8 +11,8 @@ import { Detail } from "./details";
 
 @Entity({ name: "product" })
 export class Product {
-  @PrimaryColumn({ type: "varchar" })
-    id: string;
+  @PrimaryColumn({ type: "integer" })
+    id: number;
 
   @Column({ name: "name", type: "varchar" })
     name: string;
@@ -41,8 +41,8 @@ export class Product {
   @Column({ name: "discontinued", type: "integer" })
     discontinued: number;
 
-  @Column({ name: "supplier_id", type: "varchar" })
-    supplierId: string;
+  @Column({ name: "supplier_id", type: "integer" })
+    supplierId: number;
   @ManyToOne(() => Supplier, (supplier) => supplier.products, {
     onDelete: "CASCADE",
   })
