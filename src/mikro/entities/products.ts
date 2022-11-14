@@ -10,7 +10,7 @@ export class Product {
   @Property({ fieldName: "name" })
     name: string;
 
-  @Property({ fieldName: "qt_per_unit" })
+  @Property({ fieldName: "quantity_per_unit" })
     qtPerUnit: string;
 
   @Property({ fieldName: "unit_price", columnType: "decimal", precision: 10, scale: 2, default: 0 })

@@ -108,7 +108,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable("product")
     .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("name", "varchar", (col) => col.notNull())
-    .addColumn("qt_per_unit", "varchar", (col) => col.notNull())
+    .addColumn("quantity_per_unit", "varchar", (col) => col.notNull())
     .addColumn("unit_price", "decimal", (col) => col.notNull())
     .addColumn("units_in_stock", "integer", (col) => col.notNull())
     .addColumn("units_on_order", "integer", (col) => col.notNull())

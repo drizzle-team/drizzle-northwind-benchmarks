@@ -62,7 +62,7 @@ interface Supplier {
 interface Product {
     id: number;
     name: string;
-    qt_per_unit: string;
+    quantity_per_unit: string;
     unit_price: number;
     units_in_stock: number;
     units_on_order: number;
