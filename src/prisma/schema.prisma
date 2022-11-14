@@ -27,7 +27,7 @@ model Customer {
 }
 
 model Employee {
-  id              Int     @id()
+  id              Int        @id()
   lastName        String     @map("last_name")
   firstName       String?    @map("first_name")
   title           String
@@ -41,7 +41,7 @@ model Employee {
   homePhone       String     @map("home_phone")
   extension       Int
   notes           String
-  reportsTo       Int?    @map("reports_to")
+  reportsTo       Int?       @map("reports_to")
   recipient       Employee?  @relation("reports", fields: [reportsTo], references: [id], onDelete: Cascade)
   reporters       Employee[] @relation("reports")
   orders          Order[]
@@ -50,7 +50,7 @@ model Employee {
 }
 
 model Order {
-  id             Int   @id()
+  id             Int      @id()
   orderDate      String   @map("order_date")
   requiredDate   String   @map("required_date")
   shippedDate    String?  @map("shipped_date")
@@ -62,7 +62,7 @@ model Order {
   shipPostalCode String?  @map("ship_postal_code")
   shipCountry    String   @map("ship_country")
   customerId     String   @map("customer_id")
-  employeeId     Int   @map("employee_id")
+  employeeId     Int      @map("employee_id")
   customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   details        Detail[]
@@ -74,8 +74,8 @@ model Detail {
   unitPrice Decimal @map("unit_price")
   quantity  Int
   discount  Decimal
-  orderId   Int  @map("order_id")
-  productId Int  @map("product_id")
+  orderId   Int     @map("order_id")
+  productId Int     @map("product_id")
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -84,7 +84,7 @@ model Detail {
 }
 
 model Product {
-  id              Int   @id()
+  id              Int      @id()
   name            String
   quantityPerUnit String   @map("quantity_per_unit")
   unitPrice       Decimal  @map("unit_price")
@@ -92,7 +92,7 @@ model Product {
   unitsOnOrder    Int      @map("units_on_order")
   reorderLevel    Int      @map("reorder_level")
   discontinued    Int
-  supplierId      Int   @map("supplier_id")
+  supplierId      Int      @map("supplier_id")
   details         Detail[]
   supplier        Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -100,7 +100,7 @@ model Product {
 }
 
 model Supplier {
-  id           Int    @id()
+  id           Int       @id()
   companyName  String    @map("company_name")
   contactName  String    @map("contact_name")
   contactTitle String    @map("contact_title")

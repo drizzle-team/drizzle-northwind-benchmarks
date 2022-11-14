@@ -83,7 +83,7 @@ interface Metric {
     id: string;
     query: string;
     ms: number;
-    type: 'SELECT' | 'WHERE' | 'JOIN';
+    type: "SELECT" | "WHERE" | "JOIN";
     created_at: Date;
 }
 

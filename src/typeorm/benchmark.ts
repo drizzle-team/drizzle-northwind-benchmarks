@@ -1,11 +1,11 @@
 import { run, bench } from "mitata";
+import { DataSource } from "typeorm";
 import { Customer } from "./entities/customers";
 import { Employee } from "./entities/employees";
 import { Supplier } from "./entities/suppliers";
 import { Product } from "./entities/products";
 import { Order } from "./entities/orders";
 import { Detail } from "./entities/details";
-import { DataSource } from "typeorm";
 
 const db = new DataSource({
   type: "sqlite",
@@ -19,7 +19,7 @@ export const main = async () => {
   bench("TypeORM Customers: getAll", async () => {
     await db.getRepository(Customer).createQueryBuilder("customers").getMany();
   });
- 
+
   bench("TypeORM Customers: getInfo", async () => {
     await db
       .getRepository(Customer)

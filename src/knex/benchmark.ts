@@ -76,7 +76,6 @@ bench("Knex ORM Orders: getAll", async () => {
     .sum(db.raw("?? * ??", ["quantity", "unit_price"]))
     .groupBy("order.id")
     .orderBy("order.id", "asc");
-    
 });
 bench("Knex ORM Orders: getInfo", async () => {
   await db("order_detail as od")

@@ -75,9 +75,9 @@ bench("Prisma ORM Orders: getAll", async () => {
     },
   });
 
-  a.forEach(it=>{
-    it.details
-  })
+  a.forEach((it) => {
+    it.details;
+  });
 });
 
 bench("Prisma ORM Orders: getInfo", async () => {

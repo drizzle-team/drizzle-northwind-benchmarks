@@ -3,6 +3,7 @@ import { eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
+import Database from "better-sqlite3";
 import {
   employees,
   customers,
@@ -11,7 +12,6 @@ import {
   orders,
   details,
 } from "./schema";
-import Database from "better-sqlite3";
 
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 

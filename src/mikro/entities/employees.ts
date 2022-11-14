@@ -1,51 +1,51 @@
-import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
-import { Order } from './orders';
+import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Order } from "./orders";
 
-@Entity({ tableName: 'employees' })
+@Entity({ tableName: "employees" })
 export class Employee {
   @PrimaryKey()
     id: string;
 
-  @Property({ fieldName: 'last_name' })
+  @Property({ fieldName: "last_name" })
     lastName: string;
 
-  @Property({ fieldName: 'first_name', columnType: 'text', nullable: true })
+  @Property({ fieldName: "first_name", columnType: "text", nullable: true })
     firstName?: string;
 
-  @Property({ fieldName: 'title' })
+  @Property({ fieldName: "title" })
     title: string;
 
-  @Property({ fieldName: 'title_of_courtesy' })
+  @Property({ fieldName: "title_of_courtesy" })
     titleOfCourtesy: string;
 
-  @Property({ fieldName: 'birth_date' })
+  @Property({ fieldName: "birth_date" })
     birthDate: Date;
 
-  @Property({ fieldName: 'hire_date' })
+  @Property({ fieldName: "hire_date" })
     hireDate: Date;
 
-  @Property({ fieldName: 'address' })
+  @Property({ fieldName: "address" })
     address: string;
 
-  @Property({ fieldName: 'city' })
+  @Property({ fieldName: "city" })
     city: string;
 
-  @Property({ name: 'postal_code' })
+  @Property({ name: "postal_code" })
     postalCode: string;
 
-  @Property({ fieldName: 'country' })
+  @Property({ fieldName: "country" })
     country: string;
 
-  @Property({ fieldName: 'home_phone' })
+  @Property({ fieldName: "home_phone" })
     homePhone: string;
 
-  @Property({ fieldName: 'extension' })
+  @Property({ fieldName: "extension" })
     extension: number;
 
-  @Property({ fieldName: 'notes', columnType: 'text' })
+  @Property({ fieldName: "notes", columnType: "text" })
     notes: string;
 
-  @Property({ fieldName: 'recipient_id', columnType: 'text', nullable: true })
+  @Property({ fieldName: "recipient_id", columnType: "text", nullable: true })
     recipientId?: string;
   @ManyToOne(() => Employee)
     recipient?: Employee;
