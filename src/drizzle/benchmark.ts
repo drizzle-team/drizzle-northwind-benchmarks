@@ -1,5 +1,5 @@
 import { run, bench } from "mitata";
-import { eq, like } from "drizzle-orm/expressions";
+import { asc, eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
@@ -38,7 +38,7 @@ bench("Drizzle-ORM Employees: getInfo", async () => {
   const query = db
     .select(employees)
     .leftJoin(e2, eq(e2.id, employees.reportsTo))
-    .where(eq(employees.id, "1"));
+    .where(eq(employees.id, 1));
 
   query.execute();
 });
@@ -76,21 +76,21 @@ bench("Drizzle-ORM Orders: getAll", async () => {
       shipName: orders.shipName,
       shipCity: orders.shipCity,
       shipCountry: orders.shipCountry,
-      products: sql`count(${details.productId})`.as<number>(),
-      quantity: sql`sum(${details.quantity})`.as<number>(),
-      totalPrice:
-        sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+      productsCount: sql`count(${details.productId})`.as<number>(),
+      quantitySum: sql`sum(${details.quantity})`.as<number>(),
+      totalPrice: sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
     })
     .leftJoin(details, eq(orders.id, details.orderId))
-    .orderBy()
+    .groupBy(orders.id)
+    .orderBy(asc(orders.id))
     .execute();
 });
 
 bench("Drizzle-ORM Orders: getInfo", async () => {
   db.select(details)
     .leftJoin(orders, eq(details.orderId, orders.id))
-    .leftJoin(products, eq(details.productId, orders.id))
-    .where(eq(details.orderId, "10248"))
+    .leftJoin(products, eq(details.productId, products.id))
+    .where(eq(details.orderId, 10248))
     .execute();
 });
 

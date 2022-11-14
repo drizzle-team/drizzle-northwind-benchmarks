@@ -69,15 +69,14 @@ bench("Prisma ORM Products: search", async () => {
 });
 
 bench("Prisma ORM Orders: getAll", async () => {
-  const a = await prisma.order.findMany({
-    include: {
-      details: true,
-    },
-  });
-
-  a.forEach((it) => {
-    it.details;
-  });
+  await prisma.$queryRaw`
+    select o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+      count(od.product_id) as products_count, 
+      sum(od.quantity) as quantity_sum, 
+      sum(od.quantity * od.unit_price) as total_price
+    from "order" as o left join "order_detail" as od on o.id = od.order_id
+    group by o.id 
+    order by o.id asc`;
 });
 
 bench("Prisma ORM Orders: getInfo", async () => {

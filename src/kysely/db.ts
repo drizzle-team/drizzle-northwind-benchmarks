@@ -27,7 +27,7 @@ interface Employee {
     home_phone: string;
     extension: number;
     notes: string;
-    recipient_id: number | null;
+    reports_to: number | null;
 }
 
 interface Order {

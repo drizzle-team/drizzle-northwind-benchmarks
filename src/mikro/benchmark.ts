@@ -1,3 +1,6 @@
+import { MikroORM, QueryOrder } from "@mikro-orm/core";
+import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
+import { SqliteDriver } from "@mikro-orm/sqlite";
 import { run, bench } from "mitata";
 import { Customer } from "./entities/customers";
 import { Detail } from "./entities/details";
@@ -5,10 +8,15 @@ import { Employee } from "./entities/employees";
 import { Order } from "./entities/orders";
 import { Product } from "./entities/products";
 import { Supplier } from "./entities/suppliers";
-import { getConnection } from "./index";
 
 export const startMikroOrmBenches = async () => {
-  const db = await getConnection();
+  const orm = await MikroORM.init<SqliteDriver>({
+    type: "sqlite",
+    dbName: "nw.sqlite",
+    entities: [Customer, Employee, Order, Supplier, Product, Detail],
+    metadataProvider: TsMorphMetadataProvider,
+  });
+  const db = orm.em.fork();
 
   bench("MikroORM Customers: getAll", async () => {
     await db.find(Customer, {});
@@ -27,7 +35,7 @@ export const startMikroOrmBenches = async () => {
   bench("MikroORM Employees: getInfo", async () => {
     await db.findOne(
       Employee,
-      { id: "1" },
+      { id: 1 },
       { populate: ["recipient"] },
     );
   });
@@ -35,7 +43,7 @@ export const startMikroOrmBenches = async () => {
     await db.find(Supplier, {});
   });
   bench("MikroORM Suppliers: getInfo", async () => {
-    await db.findOne(Supplier, { id: "1" });
+    await db.findOne(Supplier, { id: 1 });
   });
   bench("MikroORM Products: getAll", async () => {
     await db.find(Product, {});
@@ -43,7 +51,7 @@ export const startMikroOrmBenches = async () => {
   bench("MikroORM Products: getInfo", async () => {
     await db.findOne(
       Product,
-      { id: "1" },
+      { id: 1 },
       { populate: ["supplier"] },
     );
   });
@@ -53,18 +61,29 @@ export const startMikroOrmBenches = async () => {
     });
   });
   bench("MikroORM Orders: getAll", async () => {
-    await db.find(
-      Order,
-      {},
-      { populate: ["details"] },
-    );
+    await db.createQueryBuilder(Order, "o")
+      .select([
+        "id",
+        "shipped_date",
+        "ship_name",
+        "ship_city",
+        "ship_country",
+        "COUNT(product_id) AS products_count",
+        "SUM(quantity) AS quantity_sum",
+        "SUM(quantity * unit_price) AS total_price",
+      ])
+      .leftJoin("o.details", "od")
+      .groupBy("o.id")
+      .orderBy({ id: QueryOrder.ASC })
+      .execute();
   });
   bench("MikroORM Orders: getInfo", async () => {
-    await db.find(
+    const b = await db.find(
       Detail,
-      { orderId: "10248" },
+      { orderId: 10248 },
       { populate: ["order", "product"] },
     );
+    console.log(b);
   });
 
   await run();
