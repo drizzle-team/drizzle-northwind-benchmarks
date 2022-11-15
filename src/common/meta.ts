@@ -31,3 +31,19 @@ export const searches = [
   "ko", "st", "gh", "ug", "ac",
   "cc", "ch", "hu", "re", "an",
 ];
+
+const employeeIdStart = 1;
+const employeeIdEnd = 10;
+export const employeeIds = Array.from({ length: employeeIdEnd - employeeIdStart }, (_, i) => i + employeeIdStart);
+
+const supplierIdStart = 1;
+const supplierIdEnd = 30;
+export const supplierIds = Array.from({ length: supplierIdEnd - supplierIdStart }, (_, i) => i + supplierIdStart);
+
+const productIdStart = 1;
+const productIdEnd = 78;
+export const productIds = Array.from({ length: productIdStart - productIdEnd }, (_, i) => i + productIdEnd);
+
+const orderIdStart = 10248;
+const orderIdEnd = 27066;
+export const orderIds = Array.from({ length: orderIdEnd - orderIdStart }, (_, i) => i + orderIdStart);
