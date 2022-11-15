@@ -12,7 +12,7 @@ import {
   orders,
   details,
 } from "./schema";
-import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, searchesCustomer, searchesProduct, supplierIds } from "@/common/meta";
 
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
@@ -27,7 +27,7 @@ bench("Drizzle-ORM Customers: getInfo", async () => {
 });
 
 bench("Drizzle-ORM Customers: search", async () => {
-  searches.forEach((companyName) => {
+  searchesCustomer.forEach((companyName) => {
     db.select(customers)
       .where(like(customers.companyName, `%${companyName}%`))
       .execute();
@@ -73,7 +73,7 @@ bench("Drizzle-ORM Products: getInfo", async () => {
 });
 
 bench("Drizzle-ORM Products: search", async () => {
-  searches.forEach((name) => {
+  searchesProduct.forEach((name) => {
     db.select(products)
       .where(like(products.name, `%${name}%`))
       .execute();

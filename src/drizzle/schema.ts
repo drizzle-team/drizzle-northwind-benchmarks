@@ -34,6 +34,7 @@ export const employees = sqliteTable("employee", {
   extension: integer("extension").notNull(),
   notes: text("notes").notNull(),
   reportsTo: integer("reports_to"),
+  photoPath: text("photo_path"),
 }, (table) => ({
   reportsToFk: foreignKey(() => ({
     columns: [table.reportsTo],
@@ -89,6 +90,9 @@ export const products = sqliteTable("product", {
   unitsOnOrder: integer("units_on_order").notNull(),
   reorderLevel: integer("reorder_level").notNull(),
   discontinued: integer("discontinued").notNull(),
+  fax: text("fax"),
+  home_page: text("home_page"),
+  categoryId: text("category_id").notNull(),
 
   supplierId: integer("supplier_id").notNull()
     .references(() => suppliers.id, { onDelete: "cascade" }),

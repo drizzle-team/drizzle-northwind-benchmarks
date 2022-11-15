@@ -1,6 +1,6 @@
 import { bench, run } from "mitata";
 import Database from "better-sqlite3";
-import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, searchesCustomer, searchesProduct, supplierIds } from "@/common/meta";
 
 const db = new Database("nw.sqlite");
 
@@ -15,7 +15,7 @@ bench("Better-sqlite3 Customers: getInfo", async () => {
 });
 
 bench("Better-sqlite3 Customers: search", () => {
-  searches.forEach((companyName) => {
+  searchesCustomer.forEach((companyName) => {
     db.prepare(
       "select * from \"customer\" where \"customer\".\"company_name\" like ?",
     ).all(`%${companyName}%`);
@@ -78,7 +78,7 @@ bench("Better-sqlite3 Products: getInfo", async () => {
 });
 
 bench("Better-sqlite3 Products: search", () => {
-  searches.forEach((name) => {
+  searchesProduct.forEach((name) => {
     db.prepare("select * from \"product\" where \"product\".\"name\" like ?").all(`%${name}%`);
   });
 });
@@ -92,6 +92,7 @@ bench("Better-sqlite3 order: getAll", () => {
 });
 
 bench("Better-sqlite3 order: getInfo", async () => {
+  console.log(orderIds);
   for (const id of orderIds) {
     await db.prepare(
       `select "order_detail"."unit_price", "quantity", "discount", "order_id", "product_id",
@@ -103,7 +104,7 @@ bench("Better-sqlite3 order: getInfo", async () => {
     left join "order" on "order_detail"."order_id" = "order"."id"
     left join "product" on "order_detail"."product_id" = "product"."id" 
     where "order_detail"."order_id" = ?`,
-    ).get(id);
+    ).all(id);
   }
 });
 

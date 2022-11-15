@@ -1,6 +1,6 @@
 import { run, bench } from "mitata";
 import { PrismaClient } from "@prisma/client";
-import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +17,7 @@ bench("Prisma ORM Customers: getInfo", async () => {
   }
 });
 bench("Prisma ORM Customers: search", async () => {
-  for (const companyName of searches) {
+  for (const companyName of searchesCustomer) {
     await prisma.customer.findMany({
       where: {
         companyName: {
@@ -70,7 +70,7 @@ bench("Prisma ORM Products: getInfo", async () => {
   }
 });
 bench("Prisma ORM Products: search", async () => {
-  for (const name of searches) {
+  for (const name of searchesProduct) {
     await prisma.product.findMany({
       where: {
         name: {

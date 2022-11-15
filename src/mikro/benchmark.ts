@@ -2,7 +2,7 @@ import { MikroORM, QueryOrder } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
 import { SqliteDriver } from "@mikro-orm/sqlite";
 import { run, bench } from "mitata";
-import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
 import { Customer } from "./entities/customers";
 import { Detail } from "./entities/details";
 import { Employee } from "./entities/employees";
@@ -26,7 +26,7 @@ export const startMikroOrmBenches = async () => {
     for (const id of customerIds) { await db.findOne(Customer, { id }); }
   });
   bench("MikroORM Customers: search", async () => {
-    for (const companyName of searches) {
+    for (const companyName of searchesProduct) {
       await db.find(Customer, {
         companyName: { $like: `%${companyName}%` },
       });
@@ -63,7 +63,7 @@ export const startMikroOrmBenches = async () => {
     }
   });
   bench("MikroORM Products: search", async () => {
-    for (const name of searches) {
+    for (const name of searchesCustomer) {
       await db.find(Product, {
         name: { $like: `%${name}%` },
       });

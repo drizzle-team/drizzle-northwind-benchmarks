@@ -2,7 +2,7 @@ import { run, bench } from "mitata";
 import { Kysely, sql, SqliteDialect } from "kysely";
 import Database from "better-sqlite3";
 import { Database as DatabaseInit } from "./db";
-import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
 
 export const startKyselyOrmBenches = async () => {
   const db = new Kysely<DatabaseInit>({
@@ -23,7 +23,7 @@ export const startKyselyOrmBenches = async () => {
     }
   });
   bench("Kysely ORM Customers: search", async () => {
-    for (const companyName of searches) {
+    for (const companyName of searchesCustomer) {
       await db.selectFrom("customer")
         .selectAll()
         .where(sql`company_name`, "like", `%${companyName}%`)
@@ -108,7 +108,7 @@ export const startKyselyOrmBenches = async () => {
     }
   });
   bench("Kysely ORM Products: search", async () => {
-    for (const name of searches) {
+    for (const name of searchesProduct) {
       await db.selectFrom("product")
         .selectAll()
         .where(sql`name`, "like", `%${name}%`)
