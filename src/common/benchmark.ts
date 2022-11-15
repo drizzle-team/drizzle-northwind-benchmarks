@@ -15,7 +15,7 @@ import {
   orders,
   details,
 } from "../drizzle/schema";
-import { customerIds, searches } from "./meta";
+import { customerIds, searchesCustomer } from "./meta";
 import { Customer } from "@/typeorm/entities/customers";
 import { Employee } from "@/typeorm/entities/employees";
 import { Supplier } from "@/typeorm/entities/suppliers";
@@ -137,7 +137,7 @@ group("select * from customer where company_name like ?", () => {
   );
 
   bench("b3", () => {
-    searches.forEach((it) => {
+    searchesCustomer.forEach((it) => {
       sql1.all(`%${it}%`);
     });
   });
@@ -148,20 +148,20 @@ group("select * from customer where company_name like ?", () => {
     .prepare();
 
   bench("drizzle", () => {
-    searches.forEach((it) => {
+    searchesCustomer.forEach((it) => {
       drz.execute({ name: `%${it}%` });
     });
   });
 
   bench("knex", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await knex("customer").whereRaw("lower(company_name) LIKE ?", [`%${it}%`]);
     }
   });
 
   const repo = typeorm.getRepository(Customer);
   bench("typeorm", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await repo
         .createQueryBuilder()
         .where("lower(company_name) like :company", { company: `%${it}%` })
@@ -170,7 +170,7 @@ group("select * from customer where company_name like ?", () => {
   });
 
   bench("prisma", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await prisma.customer.findMany({
         where: {
           companyName: {

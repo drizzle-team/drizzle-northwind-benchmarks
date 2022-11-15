@@ -10,16 +10,16 @@ export const startSqlite3Benches = async () => {
   });
 
   bench("Sqlite3 Driver Customers: getAll", async () => {
-    await db.all("select * from \"customer\"");
+    await db.all('SELECT * FROM "customer"')
   });
   bench("Sqlite3 Driver Customers: getInfo", async () => {
     for (const id of customerIds) {
-      await db.all("select * from \"customer\" where \"customer\".\"id\" = $1", [id]);
+      await db.all("SELECT * FROM customer WHERE customer.id = $1", [id]);
     }
   });
   bench("Sqlite3 Driver Customers: search", async () => {
     for (const companyName of searchesCustomer) {
-      await db.all("select * from \"customer\" where \"customer\".\"company_name\" like ?", [`%${companyName}%`]);
+      await db.all("SELECT * FROM customer WHERE customer.company_name LIKE ?", [`%${companyName}%`]);
     }
   });
 
