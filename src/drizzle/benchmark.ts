@@ -1,5 +1,5 @@
 import { run, bench } from "mitata";
-import { asc, eq, like } from "drizzle-orm/expressions";
+import { asc, eq, inArray, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
@@ -110,6 +110,7 @@ bench("Drizzle-ORM Orders: getInfo", () => {
 
 const main = async () => {
   await run();
+  process.exit(1)
 };
 
 main();
