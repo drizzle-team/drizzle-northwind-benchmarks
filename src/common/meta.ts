@@ -19,15 +19,51 @@ export const customerIds = [
 ]
 
 // prettier-ignore
-export const searches = [
-  "ha", "ey", "or", "bb", "te",
-  "ab", "er", "on", "ap", "be",
-  "en", "au", "ra", "ti", "an",
-  "ch", "hi", "er", "ri", "pi",
-  "ou", "ur", "me", "ea", "os",
+export const searchesCustomer = [
+  "ve", "ey", "or", "bb", "te",
+  "ab", "ca", "ki", "ap", "be",
+  "ct", "hi", "er", "pr", "pi",
+  "en", "au", "ra", "ti", "ke",
+  "ou", "ur", "me", "ea", "op",
   "at", "ne", "na", "os", "ri",
   "on", "ha", "il", "to", "as",
   "io", "di", "zy", "az", "la",
   "ko", "st", "gh", "ug", "ac",
   "cc", "ch", "hu", "re", "an",
 ];
+
+// prettier-ignore
+export const searchesProduct = [
+  "ha", "ey", "or", "po", "te",
+  "ab", "er", "ke", "ap", "be",
+  "en", "au", "ra", "ti", "su",
+  "sa", "hi", "nu", "ge", "pi",
+  "ou", "ur", "me", "ea", "tu",
+  "at", "ne", "na", "os", "ri",
+  "on", "ka", "il", "to", "as",
+  "io", "di", "za", "fa", "la",
+  "ko", "st", "gh", "ug", "ac",
+  "cc", "ch", "pa", "re", "an",
+];
+
+const employeeIdStart = 1;
+const employeeIdEnd = 10;
+export const employeeIds = Array.from({ length: employeeIdEnd - employeeIdStart }, (_, i) => i + employeeIdStart);
+
+const supplierIdStart = 1;
+const supplierIdEnd = 30;
+export const supplierIds = Array.from({ length: supplierIdEnd - supplierIdStart }, (_, i) => i + supplierIdStart);
+
+const productIdStart = 1;
+const productIdEnd = 78;
+export const productIds = Array.from({ length: productIdStart - productIdEnd }, (_, i) => i + productIdEnd);
+
+const getRandomOrderIds = () => {
+  const firstId = 10248;
+  const lastId = 27065;
+  const orderIds = new Set<number>();
+  while (orderIds.size <= 100) orderIds.add(Math.round(firstId + Math.random() * (lastId - firstId)));
+  return Array.from(orderIds);
+};
+
+export const orderIds = getRandomOrderIds();

@@ -3,6 +3,10 @@ import Database from "better-sqlite3";
 import { eq, ilike, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 import { sql } from "drizzle-orm";
+import { placeholder } from "drizzle-orm/sql";
+import knx from "knex";
+import { DataSource } from "typeorm";
+import { PrismaClient } from "@prisma/client";
 import {
   employees,
   customers,
@@ -11,17 +15,13 @@ import {
   orders,
   details,
 } from "../drizzle/schema";
-import { placeholder } from "drizzle-orm/sql";
-import { customerIds, searches } from "./meta";
-import knx from "knex";
-import { DataSource } from "typeorm";
+import { customerIds, searchesCustomer } from "./meta";
 import { Customer } from "@/typeorm/entities/customers";
 import { Employee } from "@/typeorm/entities/employees";
 import { Supplier } from "@/typeorm/entities/suppliers";
 import { Order } from "@/typeorm/entities/orders";
 import { Product } from "@/typeorm/entities/products";
 import { Detail } from "@/typeorm/entities/details";
-import { PrismaClient } from "@prisma/client";
 
 const instance = new Database("nw.sqlite");
 const drizzle = new SQLiteConnector(new Database("nw.sqlite")).connect();
@@ -45,10 +45,10 @@ const prisma = new PrismaClient();
 
 group("select * from customer", () => {
   bench("b3", () => {
-    instance.prepare('select * from "customer"').all();
+    instance.prepare("select * from \"customer\"").all();
   });
 
-  const sql = instance.prepare('select * from "customer"');
+  const sql = instance.prepare("select * from \"customer\"");
   bench("b3:p", () => {
     sql.all();
   });
@@ -109,19 +109,19 @@ group("select * from customer where id = ?", () => {
   });
 
   bench("knex", async () => {
-    for (let id of customerIds) {
+    for (const id of customerIds) {
       await knex("customer").where({ id });
     }
   });
   const repo = typeorm.getRepository(Customer);
   bench("typeorm", async () => {
-    for (let id of customerIds) {
+    for (const id of customerIds) {
       await repo.createQueryBuilder().where("id = :id", { id }).getOne();
     }
   });
 
   bench("prisma", async () => {
-    for (let id of customerIds) {
+    for (const id of customerIds) {
       await prisma.customer.findMany({
         where: {
           id,
@@ -133,11 +133,11 @@ group("select * from customer where id = ?", () => {
 
 group("select * from customer where company_name like ?", () => {
   const sql1 = instance.prepare(
-    "select * from customer where lower(company_name) like ?"
+    "select * from customer where lower(company_name) like ?",
   );
 
   bench("b3", () => {
-    searches.forEach((it) => {
+    searchesCustomer.forEach((it) => {
       sql1.all(`%${it}%`);
     });
   });
@@ -148,20 +148,20 @@ group("select * from customer where company_name like ?", () => {
     .prepare();
 
   bench("drizzle", () => {
-    searches.forEach((it) => {
+    searchesCustomer.forEach((it) => {
       drz.execute({ name: `%${it}%` });
     });
   });
 
   bench("knex", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await knex("customer").whereRaw("lower(company_name) LIKE ?", [`%${it}%`]);
     }
   });
 
   const repo = typeorm.getRepository(Customer);
   bench("typeorm", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await repo
         .createQueryBuilder()
         .where("lower(company_name) like :company", { company: `%${it}%` })
@@ -170,7 +170,7 @@ group("select * from customer where company_name like ?", () => {
   });
 
   bench("prisma", async () => {
-    for (const it of searches) {
+    for (const it of searchesCustomer) {
       await prisma.customer.findMany({
         where: {
           companyName: {
@@ -203,7 +203,7 @@ const test = async () => {
       .getRepository(Customer)
       .createQueryBuilder()
       .where("company_name like :company")
-      .getSql()
+      .getSql(),
   );
   // console.log(db("customer").whereRaw("lower(company_name) LIKE %ha%"))
   process.exit(1);

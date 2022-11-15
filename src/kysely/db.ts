@@ -13,7 +13,7 @@ interface Customer {
 }
 
 interface Employee {
-    id: string;
+    id: number;
     last_name: string;
     first_name: string | null;
     title: string;
@@ -27,11 +27,11 @@ interface Employee {
     home_phone: string;
     extension: number;
     notes: string;
-    recipient_id: string | null;
+    reports_to: number | null;
 }
 
 interface Order {
-    id: string;
+    id: number;
     order_date: Date;
     required_date: Date;
     shipped_date: Date | null;
@@ -43,11 +43,11 @@ interface Order {
     ship_postal_code: string | null;
     ship_country: string;
     customer_id: string;
-    employee_id: string;
+    employee_id: number;
 }
 
 interface Supplier {
-    id: string;
+    id: number;
     company_name: string;
     contact_name: string;
     contact_title: string;
@@ -60,39 +60,30 @@ interface Supplier {
 }
 
 interface Product {
-    id: string;
+    id: number;
     name: string;
-    qt_per_unit: string;
+    quantity_per_unit: string;
     unit_price: number;
     units_in_stock: number;
     units_on_order: number;
     reorder_level: number;
     discontinued: number;
-    supplier_id: string;
+    supplier_id: number;
 }
 
 interface Detail {
     unit_price: number;
     quantity: number;
     discount: number;
-    order_id: string;
-    product_id: string;
-}
-
-interface Metric {
-    id: string;
-    query: string;
-    ms: number;
-    type: 'SELECT' | 'WHERE' | 'JOIN';
-    created_at: Date;
+    order_id: number;
+    product_id: number;
 }
 
 export interface Database {
-    customers: Customer;
-    employees: Employee;
-    orders: Order;
-    products: Product;
-    suppliers: Supplier;
-    order_details: Detail;
-    metrics: Metric;
+    customer: Customer;
+    employee: Employee;
+    order: Order;
+    product: Product;
+    supplier: Supplier;
+    order_detail: Detail;
 }

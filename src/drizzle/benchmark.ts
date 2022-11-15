@@ -1,8 +1,9 @@
 import { run, bench } from "mitata";
-import { eq, like } from "drizzle-orm/expressions";
+import { asc, eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
+import Database from "better-sqlite3";
 import {
   employees,
   customers,
@@ -11,64 +12,75 @@ import {
   orders,
   details,
 } from "./schema";
-import Database from "better-sqlite3";
+import { customerIds, employeeIds, orderIds, productIds, searchesCustomer, searchesProduct, supplierIds } from "@/common/meta";
 
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
-bench("Drizzle-ORM Customers: getAll", async () => {
+bench("Drizzle-ORM Customers: getAll", () => {
   db.select(customers).execute();
 });
 
-bench("Drizzle-ORM Customers: getInfo", async () => {
-  db.select(customers).where(eq(customers.id, "ALFKI")).execute();
+bench("Drizzle-ORM Customers: getInfo", () => {
+  customerIds.forEach((id) => {
+    db.select(customers).where(eq(customers.id, id)).execute();
+  });
 });
 
-bench("Drizzle-ORM Customers: search", async () => {
-  db.select(customers)
-    .where(like(customers.companyName, `%${"ha"}%`))
-    .execute();
+bench("Drizzle-ORM Customers: search", () => {
+  searchesCustomer.forEach((companyName) => {
+    db.select(customers)
+      .where(like(customers.companyName, `%${companyName}%`))
+      .execute();
+  });
 });
 
-bench("Drizzle-ORM Employees: getAll", async () => {
+bench("Drizzle-ORM Employees: getAll", () => {
   db.select(employees).execute();
 });
 
-bench("Drizzle-ORM Employees: getInfo", async () => {
+bench("Drizzle-ORM Employees: getInfo", () => {
   const e2 = alias(employees, "recipient");
-  const query = db
-    .select(employees)
-    .leftJoin(e2, eq(e2.id, employees.reportsTo))
-    .where(eq(employees.id, "1"));
 
-  query.execute();
+  employeeIds.forEach((id) => {
+    db.select(employees)
+      .leftJoin(e2, eq(e2.id, employees.reportsTo))
+      .where(eq(employees.id, id))
+      .execute();
+  });
 });
 
-bench("Drizzle-ORM Suppliers: getAll", async () => {
+bench("Drizzle-ORM Suppliers: getAll", () => {
   db.select(suppliers).execute();
 });
 
-bench("Drizzle-ORM Suppliers: getInfo", async () => {
-  db.select(suppliers).where(eq(suppliers.id, 1)).execute();
+bench("Drizzle-ORM Suppliers: getInfo", () => {
+  supplierIds.forEach((id) => {
+    db.select(suppliers).where(eq(suppliers.id, id)).execute();
+  });
 });
 
-bench("Drizzle-ORM Products: getAll", async () => {
+bench("Drizzle-ORM Products: getAll", () => {
   db.select(products).execute();
 });
 
-bench("Drizzle-ORM Products: getInfo", async () => {
-  db.select(products)
-    .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
-    .where(eq(products.id, 1))
-    .execute();
+bench("Drizzle-ORM Products: getInfo", () => {
+  productIds.forEach((id) => {
+    db.select(products)
+      .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
+      .where(eq(products.id, id))
+      .execute();
+  });
 });
 
-bench("Drizzle-ORM Products: search", async () => {
-  db.select(products)
-    .where(like(products.name, `%${"cha"}%`))
-    .execute();
+bench("Drizzle-ORM Products: search", () => {
+  searchesProduct.forEach((name) => {
+    db.select(products)
+      .where(like(products.name, `%${name}%`))
+      .execute();
+  });
 });
 
-bench("Drizzle-ORM Orders: getAll", async () => {
+bench("Drizzle-ORM Orders: getAll", () => {
   db.select(orders)
     .fields({
       id: orders.id,
@@ -76,22 +88,24 @@ bench("Drizzle-ORM Orders: getAll", async () => {
       shipName: orders.shipName,
       shipCity: orders.shipCity,
       shipCountry: orders.shipCountry,
-      products: sql`count(${details.productId})`.as<number>(),
-      quantity: sql`sum(${details.quantity})`.as<number>(),
-      totalPrice:
-        sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+      productsCount: sql`count(${details.productId})`.as<number>(),
+      quantitySum: sql`sum(${details.quantity})`.as<number>(),
+      totalPrice: sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
     })
     .leftJoin(details, eq(orders.id, details.orderId))
-    .orderBy()
+    .groupBy(orders.id)
+    .orderBy(asc(orders.id))
     .execute();
 });
 
-bench("Drizzle-ORM Orders: getInfo", async () => {
-  db.select(details)
-    .leftJoin(orders, eq(details.orderId, orders.id))
-    .leftJoin(products, eq(details.productId, orders.id))
-    .where(eq(details.orderId, "10248"))
-    .execute();
+bench("Drizzle-ORM Orders: getInfo", () => {
+  orderIds.forEach((id) => {
+    db.select(details)
+      .leftJoin(orders, eq(details.orderId, orders.id))
+      .leftJoin(products, eq(details.productId, products.id))
+      .where(eq(details.orderId, id))
+      .execute();
+  });
 });
 
 const main = async () => {

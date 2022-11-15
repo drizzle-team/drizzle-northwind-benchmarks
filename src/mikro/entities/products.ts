@@ -1,35 +1,35 @@
-import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
-import { Supplier } from './suppliers';
-import { Detail } from './details';
+import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Supplier } from "./suppliers";
+import { Detail } from "./details";
 
-@Entity({ tableName: 'products' })
+@Entity({ tableName: "product" })
 export class Product {
   @PrimaryKey()
-    id: string;
+    id: number;
 
-  @Property({ fieldName: 'name' })
+  @Property({ fieldName: "name" })
     name: string;
 
-  @Property({ fieldName: 'qt_per_unit' })
+  @Property({ fieldName: "quantity_per_unit" })
     qtPerUnit: string;
 
-  @Property({ fieldName: 'unit_price', columnType: 'decimal', precision: 10, scale: 2, default: 0 })
+  @Property({ fieldName: "unit_price", columnType: "decimal", precision: 10, scale: 2, default: 0 })
     unitPrice: number;
 
-  @Property({ fieldName: 'units_in_stock' })
+  @Property({ fieldName: "units_in_stock" })
     unitsInStock: number;
 
-  @Property({ fieldName: 'units_on_order' })
+  @Property({ fieldName: "units_on_order" })
     unitsOnOrder: number;
 
-  @Property({ fieldName: 'reorder_level' })
+  @Property({ fieldName: "reorder_level" })
     reorderLevel: number;
 
-  @Property({ fieldName: 'discontinued' })
+  @Property({ fieldName: "discontinued" })
     discontinued: number;
 
-  @Property({ fieldName: 'supplier_id' })
-    supplierId: string;
+  @Property({ fieldName: "supplier_id" })
+    supplierId: number;
   @ManyToOne(() => Supplier)
     supplier: Supplier;
 
