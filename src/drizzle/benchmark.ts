@@ -12,6 +12,7 @@ import {
   orders,
   details,
 } from "./schema";
+import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
 
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
@@ -20,13 +21,17 @@ bench("Drizzle-ORM Customers: getAll", async () => {
 });
 
 bench("Drizzle-ORM Customers: getInfo", async () => {
-  db.select(customers).where(eq(customers.id, "ALFKI")).execute();
+  customerIds.forEach((id) => {
+    db.select(customers).where(eq(customers.id, id)).execute();
+  });
 });
 
 bench("Drizzle-ORM Customers: search", async () => {
-  db.select(customers)
-    .where(like(customers.companyName, `%${"ha"}%`))
-    .execute();
+  searches.forEach((companyName) => {
+    db.select(customers)
+      .where(like(customers.companyName, `%${companyName}%`))
+      .execute();
+  });
 });
 
 bench("Drizzle-ORM Employees: getAll", async () => {
@@ -35,12 +40,13 @@ bench("Drizzle-ORM Employees: getAll", async () => {
 
 bench("Drizzle-ORM Employees: getInfo", async () => {
   const e2 = alias(employees, "recipient");
-  const query = db
-    .select(employees)
-    .leftJoin(e2, eq(e2.id, employees.reportsTo))
-    .where(eq(employees.id, 1));
 
-  query.execute();
+  employeeIds.forEach((id) => {
+    db.select(employees)
+      .leftJoin(e2, eq(e2.id, employees.reportsTo))
+      .where(eq(employees.id, id))
+      .execute();
+  });
 });
 
 bench("Drizzle-ORM Suppliers: getAll", async () => {
@@ -48,7 +54,9 @@ bench("Drizzle-ORM Suppliers: getAll", async () => {
 });
 
 bench("Drizzle-ORM Suppliers: getInfo", async () => {
-  db.select(suppliers).where(eq(suppliers.id, 1)).execute();
+  supplierIds.forEach((id) => {
+    db.select(suppliers).where(eq(suppliers.id, id)).execute();
+  });
 });
 
 bench("Drizzle-ORM Products: getAll", async () => {
@@ -56,16 +64,20 @@ bench("Drizzle-ORM Products: getAll", async () => {
 });
 
 bench("Drizzle-ORM Products: getInfo", async () => {
-  db.select(products)
-    .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
-    .where(eq(products.id, 1))
-    .execute();
+  productIds.forEach((id) => {
+    db.select(products)
+      .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
+      .where(eq(products.id, id))
+      .execute();
+  });
 });
 
 bench("Drizzle-ORM Products: search", async () => {
-  db.select(products)
-    .where(like(products.name, `%${"cha"}%`))
-    .execute();
+  searches.forEach((name) => {
+    db.select(products)
+      .where(like(products.name, `%${name}%`))
+      .execute();
+  });
 });
 
 bench("Drizzle-ORM Orders: getAll", async () => {
@@ -87,11 +99,13 @@ bench("Drizzle-ORM Orders: getAll", async () => {
 });
 
 bench("Drizzle-ORM Orders: getInfo", async () => {
-  db.select(details)
-    .leftJoin(orders, eq(details.orderId, orders.id))
-    .leftJoin(products, eq(details.productId, products.id))
-    .where(eq(details.orderId, 10248))
-    .execute();
+  orderIds.forEach((id) => {
+    db.select(details)
+      .leftJoin(orders, eq(details.orderId, orders.id))
+      .leftJoin(products, eq(details.productId, products.id))
+      .where(eq(details.orderId, id))
+      .execute();
+  });
 });
 
 const main = async () => {

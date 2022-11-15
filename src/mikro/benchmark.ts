@@ -2,6 +2,7 @@ import { MikroORM, QueryOrder } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
 import { SqliteDriver } from "@mikro-orm/sqlite";
 import { run, bench } from "mitata";
+import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
 import { Customer } from "./entities/customers";
 import { Detail } from "./entities/details";
 import { Employee } from "./entities/employees";
@@ -22,43 +23,51 @@ export const startMikroOrmBenches = async () => {
     await db.find(Customer, {});
   });
   bench("MikroORM Customers: getInfo", async () => {
-    await db.findOne(Customer, { id: "ALFKI" });
+    for (const id of customerIds) { await db.findOne(Customer, { id }); }
   });
   bench("MikroORM Customers: search", async () => {
-    await db.find(Customer, {
-      companyName: { $like: "%ha%" },
-    });
+    for (const companyName of searches) {
+      await db.find(Customer, {
+        companyName: { $like: `%${companyName}%` },
+      });
+    }
   });
   bench("MikroORM Employees: getAll", async () => {
     await db.find(Employee, {});
   });
   bench("MikroORM Employees: getInfo", async () => {
-    await db.findOne(
-      Employee,
-      { id: 1 },
-      { populate: ["recipient"] },
-    );
+    for (const id of employeeIds) {
+      await db.findOne(
+        Employee,
+        { id },
+        { populate: ["recipient"] },
+      );
+    }
   });
   bench("MikroORM Suppliers: getAll", async () => {
     await db.find(Supplier, {});
   });
   bench("MikroORM Suppliers: getInfo", async () => {
-    await db.findOne(Supplier, { id: 1 });
+    for (const id of supplierIds) { await db.findOne(Supplier, { id }); }
   });
   bench("MikroORM Products: getAll", async () => {
     await db.find(Product, {});
   });
   bench("MikroORM Products: getInfo", async () => {
-    await db.findOne(
-      Product,
-      { id: 1 },
-      { populate: ["supplier"] },
-    );
+    for (const id of productIds) {
+      await db.findOne(
+        Product,
+        { id },
+        { populate: ["supplier"] },
+      );
+    }
   });
   bench("MikroORM Products: search", async () => {
-    await db.find(Product, {
-      name: { $like: "%cha%" },
-    });
+    for (const name of searches) {
+      await db.find(Product, {
+        name: { $like: `%${name}%` },
+      });
+    }
   });
   bench("MikroORM Orders: getAll", async () => {
     await db.createQueryBuilder(Order, "o")
@@ -78,12 +87,13 @@ export const startMikroOrmBenches = async () => {
       .execute();
   });
   bench("MikroORM Orders: getInfo", async () => {
-    const b = await db.find(
-      Detail,
-      { orderId: 10248 },
-      { populate: ["order", "product"] },
-    );
-    console.log(b);
+    for (const id of orderIds) {
+      await db.find(
+        Detail,
+        { orderId: id },
+        { populate: ["order", "product"] },
+      );
+    }
   });
 
   await run();

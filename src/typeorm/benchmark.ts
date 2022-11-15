@@ -6,6 +6,7 @@ import { Supplier } from "./entities/suppliers";
 import { Product } from "./entities/products";
 import { Order } from "./entities/orders";
 import { Detail } from "./entities/details";
+import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
 
 const db = new DataSource({
   type: "sqlite",
@@ -21,50 +22,58 @@ export const main = async () => {
   });
 
   bench("TypeORM Customers: getInfo", async () => {
-    await db.getRepository(Customer).findOneBy({ id: "ALFKI" });
+    for (const id of customerIds) { await db.getRepository(Customer).findOneBy({ id }); }
   });
   bench("TypeORM Customers: search", async () => {
-    await db
-      .getRepository(Customer)
-      .createQueryBuilder("customer")
-      .where("customer.company_name LIKE :company", { company: "%ha%" })
-      .getMany();
+    for (const companyName of searches) {
+      await db
+        .getRepository(Customer)
+        .createQueryBuilder("customer")
+        .where("customer.company_name LIKE :company", { company: `%${companyName}%` })
+        .getMany();
+    }
   });
 
   bench("TypeORM Employees: getAll", async () => {
     await db.getRepository(Employee).find();
   });
   bench("TypeORM Employees: getInfo", async () => {
-    await db
-      .getRepository(Employee)
-      .createQueryBuilder("employee")
-      .leftJoinAndSelect("employee.recipient", "recipients")
-      .where("employee.id = :id", { id: 1 })
-      .getOne();
+    for (const id of employeeIds) {
+      await db
+        .getRepository(Employee)
+        .createQueryBuilder("employee")
+        .leftJoinAndSelect("employee.recipient", "recipients")
+        .where("employee.id = :id", { id })
+        .getOne();
+    }
   });
   bench("TypeORM Suppliers: getAll", async () => {
     await db.getRepository(Supplier).find();
   });
   bench("TypeORM Suppliers: getInfo", async () => {
-    await db.getRepository(Supplier).findOneBy({ id: 1 });
+    for (const id of supplierIds) { await db.getRepository(Supplier).findOneBy({ id }); }
   });
   bench("TypeORM Products: getAll", async () => {
     await db.getRepository(Product).find();
   });
   bench("TypeORM Products: getInfo", async () => {
-    await db
-      .getRepository(Product)
-      .createQueryBuilder("product")
-      .leftJoinAndSelect("product.supplier", "supplier")
-      .where("product.id = :id", { id: 1 })
-      .getOne();
+    for (const id of productIds) {
+      await db
+        .getRepository(Product)
+        .createQueryBuilder("product")
+        .leftJoinAndSelect("product.supplier", "supplier")
+        .where("product.id = :id", { id })
+        .getOne();
+    }
   });
   bench("TypeORM Products: search", async () => {
-    await db
-      .getRepository(Product)
-      .createQueryBuilder("product")
-      .where("product.name like :name", { name: "%cha%" })
-      .getMany();
+    for (const name of searches) {
+      await db
+        .getRepository(Product)
+        .createQueryBuilder("product")
+        .where("product.name like :name", { name: `%${name}%` })
+        .getMany();
+    }
   });
 
   bench("TypeORM Orders: getAll", async () => {
@@ -82,13 +91,15 @@ export const main = async () => {
       .getRawMany();
   });
   bench("TypeORM Orders: getInfo", async () => {
-    await db
-      .getRepository(Detail)
-      .createQueryBuilder("order_detail")
-      .leftJoinAndSelect("order_detail.order", "orders")
-      .leftJoinAndSelect("order_detail.product", "products")
-      .where("order_detail.order_id = :id", { id: 10248 })
-      .getMany();
+    for (const id of orderIds) {
+      await db
+        .getRepository(Detail)
+        .createQueryBuilder("order_detail")
+        .leftJoinAndSelect("order_detail.order", "orders")
+        .leftJoinAndSelect("order_detail.product", "products")
+        .where("order_detail.order_id = :id", { id })
+        .getMany();
+    }
   });
 
   await run();

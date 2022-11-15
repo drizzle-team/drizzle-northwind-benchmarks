@@ -1,6 +1,7 @@
 import { bench, run } from "mitata";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
+import { customerIds, employeeIds, orderIds, productIds, searches, supplierIds } from "@/common/meta";
 
 export const startSqlite3Benches = async () => {
   const db = await open({
@@ -12,18 +13,23 @@ export const startSqlite3Benches = async () => {
     await db.all("select * from \"customer\"");
   });
   bench("Sqlite3 Driver Customers: getInfo", async () => {
-    await db.all("select * from \"customer\" where \"customer\".\"id\" = $1", ["ALFKI"]);
+    for (const id of customerIds) {
+      await db.all("select * from \"customer\" where \"customer\".\"id\" = $1", [id]);
+    }
   });
   bench("Sqlite3 Driver Customers: search", async () => {
-    await db.all("select * from \"customer\" where \"customer\".\"company_name\" like ?", ["%ha%"]);
+    for (const companyName of searches) {
+      await db.all("select * from \"customer\" where \"customer\".\"company_name\" like ?", [`%${companyName}%`]);
+    }
   });
 
   bench("Sqlite3 Driver Employees: getAll", async () => {
     await db.all("select * from \"employee\"");
   });
   bench("Sqlite3 Driver Employees: getInfo", async () => {
-    await db.all(
-      `select e1.*,
+    for (const id of employeeIds) {
+      await db.all(
+        `select e1.*,
       e2.id as e2_id,
       e2.last_name as e2_last_name,
       e2.first_name as e2_first_name,
@@ -43,30 +49,33 @@ export const startSqlite3Benches = async () => {
       left join employee as e2
       on e2.id = e1.reports_to
       where e1.id = ?`,
-      [1],
-    );
+        [id],
+      );
+    }
   });
 
   bench("Sqlite3 Driver Suppliers: getAll", async () => {
     await db.all("select * from \"supplier\"");
   });
   bench("Sqlite3 Driver Suppliers: getInfo", async () => {
-    await db.all("select * from \"supplier\" where \"supplier\".\"id\" = ?", [1]);
+    for (const id of supplierIds) { await db.all("select * from \"supplier\" where \"supplier\".\"id\" = ?", [id]); }
   });
 
   bench("Sqlite3 Driver Products: getAll", async () => {
     await db.all("select * from \"product\"");
   });
   bench("Sqlite3 Driver Products: getInfo", async () => {
-    await db.all(
-      `select product.*, supplier.id as s_id, company_name, contact_name,
+    for (const id of productIds) {
+      await db.all(
+        `select product.*, supplier.id as s_id, company_name, contact_name,
       contact_title, address, city, region, postal_code, country, phone from product
       left join supplier on product.supplier_id = supplier.id where product.id = ?`,
-      [1],
-    );
+        [id],
+      );
+    }
   });
   bench("Sqlite3 Driver Products: search", async () => {
-    await db.all("select * from \"product\" where \"product\".\"name\" like ?", ["%cha%"]);
+    for (const name of searches) { await db.all("select * from \"product\" where \"product\".\"name\" like ?", [`%${name}%`]); }
   });
 
   bench("Sqlite3 Driver Orders: getAll", async () => {
@@ -77,8 +86,9 @@ export const startSqlite3Benches = async () => {
     );
   });
   bench("Sqlite3 Driver Orders: getInfo", async () => {
-    await db.all(
-      `select "order_detail"."unit_price", "quantity", "discount", "order_id", "product_id",
+    for (const id of orderIds) {
+      await db.all(
+        `select "order_detail"."unit_price", "quantity", "discount", "order_id", "product_id",
       "order"."id" as "o_id", "order_date", "required_date", "shipped_date", "ship_via", "freight", "ship_name",
       "ship_city", "ship_region", "ship_postal_code", "ship_country", "customer_id", "employee_id",
       "product"."id" as "p_id", "name", "quantity_per_unit", product."unit_price" as "p_unit_price",
@@ -87,8 +97,9 @@ export const startSqlite3Benches = async () => {
       left join "order" on "order_detail"."order_id" = "order"."id"
       left join "product" on "order_detail"."product_id" = "product"."id"
       where "order_detail"."order_id" = ?`,
-      [10248],
-    );
+        [id],
+      );
+    }
   });
   await run();
 };
