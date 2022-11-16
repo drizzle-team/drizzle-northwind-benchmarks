@@ -6,7 +6,7 @@ import { Supplier } from "./entities/suppliers";
 import { Product } from "./entities/products";
 import { Order } from "./entities/orders";
 import { Detail } from "./entities/details";
-import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, productSearches, customerSearches, supplierIds } from "@/common/meta";
 
 const db = new DataSource({
   type: "sqlite",
@@ -25,11 +25,11 @@ export const main = async () => {
     for (const id of customerIds) { await db.getRepository(Customer).findOneBy({ id }); }
   });
   bench("TypeORM Customers: search", async () => {
-    for (const companyName of searchesCustomer) {
+    for (const it of customerSearches) {
       await db
         .getRepository(Customer)
         .createQueryBuilder("customer")
-        .where("customer.company_name LIKE :company", { company: `%${companyName}%` })
+        .where("customer.company_name LIKE :company", { company: `%${it}%` })
         .getMany();
     }
   });
@@ -67,11 +67,11 @@ export const main = async () => {
     }
   });
   bench("TypeORM Products: search", async () => {
-    for (const name of searchesProduct) {
+    for (const it of productSearches) {
       await db
         .getRepository(Product)
         .createQueryBuilder("product")
-        .where("product.name like :name", { name: `%${name}%` })
+        .where("product.name like :name", { name: `%${it}%` })
         .getMany();
     }
   });

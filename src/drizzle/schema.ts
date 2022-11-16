@@ -90,9 +90,6 @@ export const products = sqliteTable("product", {
   unitsOnOrder: integer("units_on_order").notNull(),
   reorderLevel: integer("reorder_level").notNull(),
   discontinued: integer("discontinued").notNull(),
-  fax: text("fax"),
-  home_page: text("home_page"),
-  categoryId: text("category_id").notNull(),
 
   supplierId: integer("supplier_id").notNull()
     .references(() => suppliers.id, { onDelete: "cascade" }),

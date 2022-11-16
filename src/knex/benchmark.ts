@@ -1,6 +1,6 @@
 import knex from "knex";
 import { bench, run } from "mitata";
-import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, productSearches, customerSearches, supplierIds } from "@/common/meta";
 
 const db = knex({
   client: "better-sqlite3", // 'sqlite3'
@@ -17,7 +17,7 @@ bench("Knex ORM customer: getInfo", async () => {
   for (const id of customerIds) { await db("customer").where({ id }).first(); }
 });
 bench("Knex ORM customer: search", async () => {
-  for (const companyName of searchesCustomer) { await db("customer").whereRaw("company_name LIKE ?", [`%${companyName}%`]); }
+  for (const it of customerSearches) { await db("customer").whereRaw("company_name LIKE ?", [`%${it}%`]); }
 });
 
 bench("Knex ORM Employees: getAll", async () => {
@@ -82,7 +82,7 @@ bench("Knex ORM Products: getInfo", async () => {
 });
 
 bench("Knex ORM Products: search", async () => {
-  for (const name of searchesProduct) { await db("product").whereRaw("name LIKE ?", [`%${name}%`]); }
+  for (const it of productSearches) { await db("product").whereRaw("name LIKE ?", [`%${it}%`]); }
 });
 
 bench("Knex ORM Orders: getAll", async () => {

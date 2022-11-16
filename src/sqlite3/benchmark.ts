@@ -1,7 +1,7 @@
 import { bench, run } from "mitata";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
-import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, productSearches, customerSearches, supplierIds } from "@/common/meta";
 
 export const startSqlite3Benches = async () => {
   const db = await open({
@@ -18,7 +18,7 @@ export const startSqlite3Benches = async () => {
     }
   });
   bench("Sqlite3 Driver Customers: search", async () => {
-    for (const companyName of searchesCustomer) {
+    for (const companyName of customerSearches) {
       await db.all("SELECT * FROM customer WHERE customer.company_name LIKE ?", [`%${companyName}%`]);
     }
   });
@@ -75,7 +75,7 @@ export const startSqlite3Benches = async () => {
     }
   });
   bench("Sqlite3 Driver Products: search", async () => {
-    for (const name of searchesProduct) { await db.all("select * from \"product\" where \"product\".\"name\" like ?", [`%${name}%`]); }
+    for (const name of productSearches) { await db.all("select * from \"product\" where \"product\".\"name\" like ?", [`%${name}%`]); }
   });
 
   bench("Sqlite3 Driver Orders: getAll", async () => {
