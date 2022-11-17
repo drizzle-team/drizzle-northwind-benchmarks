@@ -78,9 +78,24 @@ bench("MikroORM Products: search", async () => {
   }
 });
 
-// bench("MikroORM Orders: getAll", async () => {
-//   await db.find(Order, {}, { populate: ["details"] });
-// });
+bench("MikroORM Orders: getAll", async () => {
+  await db
+    .createQueryBuilder(Order, "o")
+    .select([
+      "id",
+      "shipped_date",
+      "ship_name",
+      "ship_city",
+      "ship_country",
+      "COUNT(product_id) AS products_count",
+      "SUM(quantity) AS quantity_sum",
+      "SUM(quantity * unit_price) AS total_price",
+    ])
+    .leftJoin("o.details", "od")
+    .groupBy("o.id")
+    .orderBy({ id: QueryOrder.ASC })
+    .execute();
+});
 
 bench("MikroORM Orders: getInfo", async () => {
   for (const id of orderIds) {
