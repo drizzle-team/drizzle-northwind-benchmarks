@@ -607,7 +607,6 @@ group("select * from supplier where id = ?", () => {
 });
 
 /////
-
 group("SELECT * FROM product", () => {
   bench("b3", () => {
     instance.prepare("SELECT * FROM product").all();
@@ -651,7 +650,6 @@ group("SELECT * FROM product", () => {
 });
 
 ////
-
 group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
   bench("b3", () => {
     productIds.forEach((it) => {
@@ -782,7 +780,6 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 });
 
 ////////////
-
 group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   bench("b3", () => {
     productSearches.forEach((it) => {
@@ -1046,9 +1043,9 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
     WHERE od.order_id = ?`
   );
   bench("b3:p", () => {
-     orderIds.forEach((it) => {
-    sql.all(it);
-     })
+    orderIds.forEach((it) => {
+      sql.all(it);
+    });
   });
 
   bench("drizzle", () => {
@@ -1072,6 +1069,19 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("drizzle:p", () => {
     orderIds.forEach((id) => {
       prep.execute({ orderId: id });
+    });
+  });
+
+  const prep2 = drizzle
+    .select(orders)
+    .leftJoin(details, eq(orders.id, details.orderId))
+    .leftJoin(products, eq(details.productId, products.id))
+    .where(eq(orders.id, placeholder("orderId")))
+    .prepare();
+
+  bench("drizzle:p2", () => {
+    orderIds.forEach((id) => {
+      prep2.execute({ orderId: id });
     });
   });
 
@@ -1161,20 +1171,26 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
 
   bench("mikro", async () => {
     for (const id of orderIds) {
-      await mikro.find(m_Detail, { orderId: id }, { populate: ["order", "product"] });
+      await mikro.find(
+        m_Detail,
+        { orderId: id },
+        { populate: ["order", "product"] }
+      );
     }
     mikro.clear();
   });
 
   bench("typeorm", async () => {
     for (const id of orderIds) {
-      await typeorm
-        .getRepository(Detail)
-        .createQueryBuilder("order_detail")
-        .leftJoinAndSelect("order_detail.order", "orders")
-        .leftJoinAndSelect("order_detail.product", "products")
-        .where("order_detail.order_id = :id", { id })
-        .getMany();
+      await typeorm.getRepository(Detail).find({
+        relations: {
+          order: true,
+          product: true,
+        },
+        where: {
+          orderId: id
+        }
+      });
     }
   });
 
@@ -1200,11 +1216,10 @@ const main = async () => {
   await run();
   process.exit(1);
 };
-// main();
 
 const test = async () => {
   await getMikroOrmConnect();
-  // await typeorm.initialize();
+  await typeorm.initialize();
 
   // const drz = drizzle
   //   .select(customers)
@@ -1219,7 +1234,7 @@ const test = async () => {
   //     .getSql()
   // );
   // console.log(db("customer").whereRaw("lower(company_name) LIKE %ha%"))
-
+  
   for (const id of [customerIds[0]]) {
     // console.log(await mikro.findOne(m_Customer, { id }));
     // console.log(
@@ -1237,6 +1252,8 @@ const test = async () => {
   }
   process.exit(1);
 };
+
+main();
 // test();
 
-console.log(orderIds)
+// console.log(orderIds);
