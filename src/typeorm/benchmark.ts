@@ -29,7 +29,7 @@ export const main = async () => {
       await db
         .getRepository(Customer)
         .createQueryBuilder("customer")
-        .where("customer.company_name LIKE :company", { company: `%${it}%` })
+        .where("LOWER(customer.company_name) LIKE :company", { company: `%${it}%` })
         .getMany();
     }
   });
@@ -71,7 +71,7 @@ export const main = async () => {
       await db
         .getRepository(Product)
         .createQueryBuilder("product")
-        .where("product.name like :name", { name: `%${it}%` })
+        .where("LOWER(product.name) like :name", { name: `%${it}%` })
         .getMany();
     }
   });

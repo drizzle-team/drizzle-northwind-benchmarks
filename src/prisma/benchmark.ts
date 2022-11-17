@@ -30,6 +30,7 @@ bench("Prisma ORM Customers: search", async () => {
       where: {
         companyName: {
           contains: it,
+          mode: 'insensitive',
         },
       },
     });
@@ -83,6 +84,7 @@ bench("Prisma ORM Products: search", async () => {
       where: {
         name: {
           contains: it,
+          mode: 'insensitive',
         },
       },
     });

@@ -17,7 +17,7 @@ bench("Knex ORM customer: getInfo", async () => {
   for (const id of customerIds) { await db("customer").where({ id }).first(); }
 });
 bench("Knex ORM customer: search", async () => {
-  for (const it of customerSearches) { await db("customer").whereRaw("company_name LIKE ?", [`%${it}%`]); }
+  for (const it of customerSearches) { await db("customer").whereRaw("LOWER(company_name) LIKE ?", [`%${it}%`]); }
 });
 
 bench("Knex ORM Employees: getAll", async () => {
@@ -82,7 +82,7 @@ bench("Knex ORM Products: getInfo", async () => {
 });
 
 bench("Knex ORM Products: search", async () => {
-  for (const it of productSearches) { await db("product").whereRaw("name LIKE ?", [`%${it}%`]); }
+  for (const it of productSearches) { await db("product").whereRaw("LOWER(name) LIKE ?", [`%${it}%`]); }
 });
 
 bench("Knex ORM Orders: getAll", async () => {

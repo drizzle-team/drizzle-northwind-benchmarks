@@ -35,7 +35,7 @@ bench("Kysely ORM Customers: search", async () => {
     await db
       .selectFrom("customer")
       .selectAll()
-      .where(sql`company_name`, "like", `%${it}%`)
+      .where(sql`lower(company_name)`, "like", `%${it}%`)
       .execute();
   }
 });
@@ -126,7 +126,7 @@ bench("Kysely ORM Products: search", async () => {
     await db
       .selectFrom("product")
       .selectAll()
-      .where(sql`name`, "like", `%${it}%`)
+      .where(sql`lower(name)`, "like", `%${it}%`)
       .execute();
   }
 });

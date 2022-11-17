@@ -29,7 +29,7 @@ bench("Drizzle-ORM Customers: getInfo", () => {
 bench("Drizzle-ORM Customers: search", () => {
   customerSearches.forEach((it) => {
     db.select(customers)
-      .where(like(customers.companyName, `%${it}%`))
+      .where(sql`lower(${customers.companyName}) like "%${it}%"`)
       .execute();
   });
 });
@@ -75,7 +75,7 @@ bench("Drizzle-ORM Products: getInfo", () => {
 bench("Drizzle-ORM Products: search", () => {
   productSearches.forEach((it) => {
     db.select(products)
-      .where(like(products.name, `%${it}%`))
+      .where(sql`lower(${products.name}) like "%${it}%"`)
       .execute();
   });
 });

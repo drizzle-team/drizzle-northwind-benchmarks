@@ -41,9 +41,9 @@ bench("MikroORM Customers: getInfo", async () => {
 });
 bench("MikroORM Customers: search", async () => {
   for (const it of customerSearches) {
-    await db.find(Customer, {
-      companyName: { $like: `%${it}%` },
-    });
+    await db.createQueryBuilder(Customer, 'c')
+      .where(`LOWER(c.company_name) LIKE "%${it}%"`)
+      .execute();
   }
 });
 bench("MikroORM Employees: getAll", async () => {
@@ -72,9 +72,9 @@ bench("MikroORM Products: getInfo", async () => {
 });
 bench("MikroORM Products: search", async () => {
   for (const it of productSearches) {
-    await db.find(Product, {
-      name: { $like: `%${it}%` },
-    });
+    await db.createQueryBuilder(Product, 'p')
+      .where(`LOWER(p.name) LIKE "%${it}%"`)
+      .execute();
   }
 });
 

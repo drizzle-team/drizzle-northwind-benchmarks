@@ -24,7 +24,7 @@ bench("Better-sqlite3 Customers: getInfo", () => {
 
 bench("Better-sqlite3 Customers: search", () => {
   customerSearches.forEach((it) => {
-    db.prepare("SELECT * FROM customer WHERE customer.company_name LIKE ?").all(
+    db.prepare("SELECT * FROM customer WHERE LOWER(customer.company_name) LIKE ?").all(
       `%${it}%`
     );
   });
@@ -87,7 +87,7 @@ bench("Better-sqlite3 Products: getInfo", () => {
 
 bench("Better-sqlite3 Products: search", () => {
   productSearches.forEach((it) => {
-    db.prepare("SELECT * FROM product WHERE product.name LIKE ?").all(
+    db.prepare("SELECT * FROM product WHERE LOWER(product.name) LIKE ?").all(
       `%${it}%`
     );
   });
