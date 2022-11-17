@@ -117,17 +117,6 @@ bench("Better-sqlite3 order: getInfo", async () => {
 });
 
 const main = async () => {
-  // await run();
-
-  const data = db.prepare(
-    `SELECT e1.*,
-    e2.* as 'sd'
-    FROM employee AS e1
-    LEFT JOIN employee AS e2
-    ON e2.id = e1.reports_to
-    WHERE e1.id = ?`
-  ).get('1');
-  console.log(data);
-  
+  await run();  
 };
 main();

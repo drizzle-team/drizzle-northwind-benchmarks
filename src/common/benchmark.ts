@@ -232,8 +232,7 @@ group("select * from customer where company_name like ?", () => {
 
   bench("knex", async () => {
     for (const it of customerSearches) {
-      // ??
-      await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]);
+      await knex("customer").where("company_name", "like", `%${it}%`);
     }
   });
 
@@ -427,7 +426,7 @@ group("select * from employee where id = ? left join reportee", () => {
           "e2.notes as e2_notes",
           "e2.reports_to as e2_reports_to",
         ])
-        .whereRaw("e1.id = ?", [id])
+        .where("e1.id", "=", id)
         .leftJoin("employee as e2", "e1.reports_to", "e2.id");
     }
   });
@@ -479,7 +478,9 @@ group("select * from employee where id = ? left join reportee", () => {
         where: {
           id,
         },
-        relations: ["recipient"],
+        relations: {
+          recipient: true,
+        },
       });
     }
   });
@@ -762,14 +763,12 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 
   bench("typeorm", async () => {
     for (const id of productIds) {
-      await typeorm
-        .getRepository(Product)
-        .findOne({
-          where: {
-            id
-          },
-          relations: ["supplier"]
-        })
+      await typeorm.getRepository(Product).findOne({
+        where: {
+          id,
+        },
+        relations: ["supplier"],
+      });
     }
   });
 
@@ -828,7 +827,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
 
   bench("knex", async () => {
     for (const it of productSearches) {
-      await knex("product").whereRaw("name LIKE ?", [`%${it}%`]);
+      await knex("product").where("name", "like", `%${it}%`);
     }
   });
 
@@ -853,13 +852,11 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
 
   bench("typeorm", async () => {
     for (const it of productSearches) {
-      await typeorm
-        .getRepository(Product)
-        .find({
-          where: {
-            name: Like(`%${it}%`)
-          }
-        })
+      await typeorm.getRepository(Product).find({
+        where: {
+          name: Like(`%${it}%`),
+        },
+      });
     }
   });
 
@@ -878,110 +875,110 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
 
 // checked
 group("select all order with sum and count", () => {
-  bench("b3", () => {
-    instance
-      .prepare(
-        `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
-        COUNT(od.product_id) AS products_count,
-        SUM(od.quantity) AS quantity_sum,
-        SUM(od.quantity * unit_price) AS total_price
-        FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-        GROUP BY o.id
-        ORDER BY o.id ASC`
-      )
-      .all();
-  });
+  // bench("b3", () => {
+  //   instance
+  //     .prepare(
+  //       `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+  //       COUNT(od.product_id) AS products_count,
+  //       SUM(od.quantity) AS quantity_sum,
+  //       SUM(od.quantity * unit_price) AS total_price
+  //       FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+  //       GROUP BY o.id
+  //       ORDER BY o.id ASC`
+  //     )
+  //     .all();
+  // });
 
-  const prep = instance.prepare(
-    `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
-      COUNT(od.product_id) AS products_count,
-      SUM(od.quantity) AS quantity_sum,
-      SUM(od.quantity * unit_price) AS total_price
-      FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-      GROUP BY o.id
-      ORDER BY o.id ASC`
-  );
-  bench("b3:p", () => {
-    prep.all();
-  });
+  // const prep = instance.prepare(
+  //   `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+  //     COUNT(od.product_id) AS products_count,
+  //     SUM(od.quantity) AS quantity_sum,
+  //     SUM(od.quantity * unit_price) AS total_price
+  //     FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+  //     GROUP BY o.id
+  //     ORDER BY o.id ASC`
+  // );
+  // bench("b3:p", () => {
+  //   prep.all();
+  // });
 
-  bench("drizzle", () => {
-    drizzle
-      .select(orders)
-      .fields({
-        id: orders.id,
-        shippedDate: orders.shippedDate,
-        shipName: orders.shipName,
-        shipCity: orders.shipCity,
-        shipCountry: orders.shipCountry,
-        productsCount: sql`count(${details.productId})`.as<number>(),
-        quantitySum: sql`sum(${details.quantity})`.as<number>(),
-        totalPrice:
-          sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
-      })
-      .leftJoin(details, eq(orders.id, details.orderId))
-      .groupBy(orders.id)
-      .orderBy(asc(orders.id))
-      .execute();
-  });
+  // bench("drizzle", () => {
+  //   drizzle
+  //     .select(orders)
+  //     .fields({
+  //       id: orders.id,
+  //       shippedDate: orders.shippedDate,
+  //       shipName: orders.shipName,
+  //       shipCity: orders.shipCity,
+  //       shipCountry: orders.shipCountry,
+  //       productsCount: sql`count(${details.productId})`.as<number>(),
+  //       quantitySum: sql`sum(${details.quantity})`.as<number>(),
+  //       totalPrice:
+  //         sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+  //     })
+  //     .leftJoin(details, eq(orders.id, details.orderId))
+  //     .groupBy(orders.id)
+  //     .orderBy(asc(orders.id))
+  //     .execute();
+  // });
 
-  const prepare = drizzle
-    .select(orders)
-    .fields({
-      id: orders.id,
-      shippedDate: orders.shippedDate,
-      shipName: orders.shipName,
-      shipCity: orders.shipCity,
-      shipCountry: orders.shipCountry,
-      productsCount: sql`count(${details.productId})`.as<number>(),
-      quantitySum: sql`sum(${details.quantity})`.as<number>(),
-      totalPrice:
-        sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
-    })
-    .leftJoin(details, eq(orders.id, details.orderId))
-    .groupBy(orders.id)
-    .orderBy(asc(orders.id))
-    .prepare();
+  // const prepare = drizzle
+  //   .select(orders)
+  //   .fields({
+  //     id: orders.id,
+  //     shippedDate: orders.shippedDate,
+  //     shipName: orders.shipName,
+  //     shipCity: orders.shipCity,
+  //     shipCountry: orders.shipCountry,
+  //     productsCount: sql`count(${details.productId})`.as<number>(),
+  //     quantitySum: sql`sum(${details.quantity})`.as<number>(),
+  //     totalPrice:
+  //       sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+  //   })
+  //   .leftJoin(details, eq(orders.id, details.orderId))
+  //   .groupBy(orders.id)
+  //   .orderBy(asc(orders.id))
+  //   .prepare();
 
-  bench("drizzle:p", () => {
-    prepare.execute();
-  });
+  // bench("drizzle:p", () => {
+  //   prepare.execute();
+  // });
 
-  bench("knex", async () => {
-    await knex("order")
-      .select([
-        "order.id",
-        "order.shipped_date",
-        "order.ship_name",
-        "order.ship_city",
-        "order.ship_country",
-      ])
-      .leftJoin("order_detail", "order_detail.order_id", "order.id")
-      .count("product_id as products_count")
-      .sum("quantity as quantity_sum")
-      .sum({ total_price: knex.raw("?? * ??", ["quantity", "unit_price"]) })
-      .groupBy("order.id")
-      .orderBy("order.id", "asc");
-  });
+  // bench("knex", async () => {
+  //   await knex("order")
+  //     .select([
+  //       "order.id",
+  //       "order.shipped_date",
+  //       "order.ship_name",
+  //       "order.ship_city",
+  //       "order.ship_country",
+  //     ])
+  //     .leftJoin("order_detail", "order_detail.order_id", "order.id")
+  //     .count("product_id as products_count")
+  //     .sum("quantity as quantity_sum")
+  //     .sum({ total_price: knex.raw("?? * ??", ["quantity", "unit_price"]) })
+  //     .groupBy("order.id")
+  //     .orderBy("order.id", "asc");
+  // });
 
-  bench("kysely", async () => {
-    await kysely
-      .selectFrom("order")
-      .select([
-        "order.id",
-        "order.shipped_date",
-        "order.ship_name",
-        "order.ship_city",
-        "order.ship_country",
-        kysely.fn.count("product_id").as("products_count"),
-        kysely.fn.sum("quantity").as("quantity_sum"),
-        k_sql`SUM(quantity * unit_price)`.as("total_price"),
-      ])
-      .leftJoin("order_detail", "order_detail.order_id", "order.id")
-      .groupBy("order.id")
-      .orderBy("order.id", "asc")
-      .execute();
-  });
+  // bench("kysely", async () => {
+  //   await kysely
+  //     .selectFrom("order")
+  //     .select([
+  //       "order.id",
+  //       "order.shipped_date",
+  //       "order.ship_name",
+  //       "order.ship_city",
+  //       "order.ship_country",
+  //       kysely.fn.count("product_id").as("products_count"),
+  //       kysely.fn.sum("quantity").as("quantity_sum"),
+  //       k_sql`SUM(quantity * unit_price)`.as("total_price"),
+  //     ])
+  //     .leftJoin("order_detail", "order_detail.order_id", "order.id")
+  //     .groupBy("order.id")
+  //     .orderBy("order.id", "asc")
+  //     .execute();
+  // });
 
   // query fails with large amount of data
   // bench("mikro", async () => {
@@ -991,18 +988,40 @@ group("select all order with sum and count", () => {
 
   bench("typeorm", async () => {
     // ??
-    await typeorm
-      .getRepository(Order)
-      .createQueryBuilder("order")
-      .leftJoin("order.details", "order_detail")
-      .addSelect([
-        "COUNT(product_id) AS products_count",
-        "SUM(quantity) AS quantity_sum",
-        "SUM(quantity * unit_price) AS total_price",
-      ])
-      .addGroupBy("order.id")
-      .orderBy("order.id")
-      .getRawMany();
+    const result = await typeorm.getRepository(Order).find({
+      relations: {
+        details: true,
+      },
+    });
+    const orders = result.map((item) => {
+      return {
+        id: item.id,
+        shippedDate: item.shippedDate,
+        shipName: item.shipName,
+        shipCity: item.shipCity,
+        shipCountry: item.shipCountry,
+        productsCount: item.details.length,
+        quantitySum: item.details.reduce(
+          (sum, deteil) => (sum += +deteil.quantity),
+          0
+        ),
+        totalPrice: item.details.reduce(
+          (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+          0
+        ),
+      };
+    });
+
+    // .createQueryBuilder("order")
+    // .leftJoin("order.details", "order_detail")
+    // .addSelect([
+    //   "COUNT(product_id) AS products_count",
+    //   "SUM(quantity) AS quantity_sum",
+    //   "SUM(quantity * unit_price) AS total_price",
+    // ])
+    // .addGroupBy("order.id")
+    // .orderBy("order.id")
+    // .getRawMany();
   });
 
   bench("prisma", async () => {
@@ -1037,22 +1056,21 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("b3", () => {
     orderIds.forEach((it) => {
       instance
-        .prepare(
-          `SELECT * FROM order_detail AS od
+       .prepare(
+        `SELECT * FROM "order" AS o
+        LEFT JOIN "order_detail" AS od ON o.id = od.order_id
         LEFT JOIN "product" AS p ON od.product_id = p.id
-        LEFT JOIN "order" AS o ON od.order_id = o.id
-        WHERE od.order_id = ?`
-        )
-        .all(it);
+        WHERE o.id = ?`
+      ).all(it);
     });
   });
 
   const sql = instance.prepare(
-    `SELECT * FROM order_detail AS od
-    LEFT JOIN "product" AS p ON od.product_id = p.id
-    LEFT JOIN "order" AS o ON od.order_id = o.id
-    WHERE od.order_id = ?`
-  );
+   `SELECT * FROM "order" AS o
+   LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+   LEFT JOIN "product" AS p ON od.product_id = p.id
+   WHERE o.id = ?`
+ );
   bench("b3:p", () => {
     orderIds.forEach((it) => {
       sql.all(it);
@@ -1062,19 +1080,19 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("drizzle", () => {
     orderIds.forEach((id) => {
       drizzle
-        .select(details)
-        .leftJoin(orders, eq(details.orderId, orders.id))
+        .select(orders)
+        .leftJoin(details, eq(orders.id, details.orderId))
         .leftJoin(products, eq(details.productId, products.id))
-        .where(eq(details.orderId, id))
+        .where(eq(orders.id, id))
         .execute();
     });
   });
 
   const prep = drizzle
-    .select(details)
-    .leftJoin(orders, eq(details.orderId, orders.id))
+    .select(orders)
+    .leftJoin(details, eq(orders.id, details.orderId))
     .leftJoin(products, eq(details.productId, products.id))
-    .where(eq(details.orderId, placeholder("orderId")))
+    .where(eq(orders.id, placeholder("orderId")))
     .prepare();
 
   bench("drizzle:p", () => {
@@ -1083,22 +1101,45 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
     });
   });
 
-  const prep2 = drizzle
-    .select(orders)
-    .leftJoin(details, eq(orders.id, details.orderId))
-    .leftJoin(products, eq(details.productId, products.id))
-    .where(eq(orders.id, placeholder("orderId")))
-    .prepare();
+  const prep2 =  drizzle.select(details)
+  .leftJoin(orders, eq(details.orderId, orders.id))
+  .leftJoin(products, eq(details.productId, products.id))
+  .where(eq(details.orderId, placeholder("orderId")))
 
-  bench("drizzle:p2", () => {
-    orderIds.forEach((id) => {
-      prep2.execute({ orderId: id });
-    });
-  });
+
+  // bench("drizzle:p2", () => {
+  //   orderIds.forEach((id) => {
+  //     prep2.execute({ orderId: id });
+  //   });
+  // });
+
+
+  // bench("drizzle2", () => {
+  //   orderIds.forEach((id) => {
+  //     drizzle.select(details)
+  //       .leftJoin(orders, eq(details.orderId, orders.id))
+  //       .leftJoin(products, eq(details.productId, products.id))
+  //       .where(eq(details.orderId, id))
+  //       .execute();
+  //   });
+  // })
+
+  // // const prep2 = drizzle
+  // //   .select(orders)
+  // //   .leftJoin(details, eq(orders.id, details.orderId))
+  // //   .leftJoin(products, eq(details.productId, products.id))
+  // //   .where(eq(orders.id, placeholder("orderId")))
+  // //   .prepare();
+
+  // // bench("drizzle:p2", () => {
+  // //   orderIds.forEach((id) => {
+  // //     prep2.execute({ orderId: id });
+  // //   });
+  // // });
 
   bench("knex", async () => {
     for (const id of orderIds) {
-      await knex("order_detail")
+      await knex("order")
         .select([
           "order_detail.*",
           "order.id as o_id",
@@ -1124,39 +1165,32 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
           "discontinued",
           "supplier_id",
         ])
-        .whereRaw("order_detail.order_id = ?", id)
-        .leftJoin("product", "product.id", "order_detail.product_id")
-        .leftJoin("order", "order.id", "order_detail.order_id");
+        .where("order.id", "=", id)
+        .leftJoin("order_detail", "order_detail.order_id", "order.id")
+        .leftJoin("product", "product.id", "order_detail.product_id");
     }
   });
 
   bench("kysely", async () => {
     for (const id of orderIds) {
       await kysely
-        .selectFrom("order_detail")
+        .selectFrom("order")
         .selectAll()
-        .where("order_id", "=", id)
+        .where("id", "=", id)
         .leftJoin(
           kysely
-            .selectFrom("order")
+            .selectFrom("order_detail")
             .select([
-              "order.id as o_id",
-              "order_date",
-              "required_date",
-              "shipped_date",
-              "ship_via",
-              "freight",
-              "ship_name",
-              "ship_city",
-              "ship_region",
-              "ship_postal_code",
-              "ship_country",
-              "customer_id",
-              "employee_id",
+              "discount",
+              "order_id",
+              "product_id",
+              "order_detail.id as od.id",
+              "unit_price",
+              "quantity",
             ])
-            .as("o"),
-          "o.o_id",
-          "order_detail.order_id"
+            .as("od"),
+          "od.order_id",
+          "order.id"
         )
         .leftJoin(
           kysely
@@ -1174,7 +1208,7 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
             ])
             .as("p"),
           "p.p_id",
-          "order_detail.product_id"
+          "od.product_id"
         )
         .execute();
     }
@@ -1183,23 +1217,27 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("mikro", async () => {
     for (const id of orderIds) {
       await mikro.find(
-        m_Detail,
-        { orderId: id },
-        { populate: ["order", "product"] }
+        m_Order,
+        { id },
+        { populate: ["details", "details.product"] }
       );
     }
     mikro.clear();
   });
 
+  bench("mikro:2", async () => {
+    for (const id of orderIds) {
+      await mikro.find(Detail, { orderId: id }, { populate: ["order", "product"] });
+    }
+  });
+  
+
   bench("typeorm", async () => {
     for (const id of orderIds) {
-      await typeorm.getRepository(Detail).find({
-        relations: {
-          order: true,
-          product: true,
-        },
+      await typeorm.getRepository(Order).find({
+        relations: ["details", "details.product"],
         where: {
-          orderId: id,
+          id,
         },
       });
     }
@@ -1207,13 +1245,16 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
 
   bench("prisma", async () => {
     for (const id of orderIds) {
-      await prisma.detail.findMany({
+      await prisma.order.findMany({
         where: {
-          orderId: id,
+          id,
         },
         include: {
-          order: true,
-          product: true,
+          details: {
+            include: {
+              product: true,
+            },
+          },
         },
       });
     }
@@ -1245,12 +1286,16 @@ const test = async () => {
   //     .getSql()
   // );
   // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
-  console.log(await typeorm.getRepository(Employee).findOne({
-    where: {
-      id: 1,
-    },
-    relations: ["recipient"],
-  }));
+  // console.log(await typeorm.getRepository(Employee).findOne({
+  //   where: {
+  //     id: 1,
+  //   },
+  //   relations: ["recipient"],
+  // }));
+  // const it = 'ha'
+  // console.log('first', await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]))
+  // console.log('second', await knex("customer").where("company_name", 'like', `%${it}%`))
+
   for (const id of [customerIds[0]]) {
     // console.log(await mikro.findOne(m_Customer, { id }));
     // console.log(

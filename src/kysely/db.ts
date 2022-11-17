@@ -72,6 +72,7 @@ interface Product {
 }
 
 interface Detail {
+    id: string,
     unit_price: number;
     quantity: number;
     discount: number;
