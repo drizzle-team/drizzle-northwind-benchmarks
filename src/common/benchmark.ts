@@ -202,9 +202,9 @@ group("select * from customer where id = ?", () => {
   });
 });
 
-group("select * from customer where lower(company_name) like ?", () => {
+group("select * from customer where company_name like ?", () => {
   const sql1 = instance.prepare(
-    "select * from customer where lower(company_name) like ?"
+    "select * from customer where company_name like ?"
   );
 
   bench("b3", () => {
@@ -215,7 +215,7 @@ group("select * from customer where lower(company_name) like ?", () => {
 
   const drz = drizzle
     .select(customers)
-    .where(sql`lower(${customers.companyName}) like ${placeholder("name")}`)
+    .where(sql`${customers.companyName} like ${placeholder("name")}`)
     .prepare();
 
   bench("drizzle:p", () => {
@@ -226,7 +226,7 @@ group("select * from customer where lower(company_name) like ?", () => {
 
   bench("knex", async () => {
     for (const it of customerSearches) {
-      await knex("customer").whereRaw("LOWER(company_name) LIKE ?", [
+      await knex("customer").whereRaw("company_name LIKE ?", [
         `%${it}%`,
       ]);
     }
@@ -237,16 +237,16 @@ group("select * from customer where lower(company_name) like ?", () => {
       await kysely
         .selectFrom("customer")
         .selectAll()
-        .where(k_sql`lower(company_name)`, "like", `%${it}%`)
+        .where(k_sql`company_name`, "like", `%${it}%`)
         .execute();
     }
   });
 
   bench("mikro", async () => {
     for (const it of customerSearches) {
-      await mikro.createQueryBuilder(Customer, 'c')
-      .where(`LOWER(c.company_name) LIKE "%${it}%"`)
-      .execute();
+      await mikro.find(m_Customer, {
+        companyName: { $like: `%${it}%` },
+      });;
     }
     mikro.clear();
   });
@@ -256,7 +256,7 @@ group("select * from customer where lower(company_name) like ?", () => {
     for (const it of customerSearches) {
       await repo
         .createQueryBuilder()
-        .where("lower(company_name) like :company", { company: `%${it}%` })
+        .where("company_name like :company", { company: `%${it}%` })
         .getMany();
     }
   });
@@ -267,7 +267,6 @@ group("select * from customer where lower(company_name) like ?", () => {
         where: {
           companyName: {
             contains: it,
-            mode: 'insensitive',
           },
         },
       });
@@ -783,17 +782,17 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 });
 
 ////////////
-group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
+group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   bench("b3", () => {
     productSearches.forEach((it) => {
       instance
-        .prepare("SELECT * FROM product WHERE lower(product.name) LIKE ?")
+        .prepare("SELECT * FROM product WHERE product.name LIKE ?")
         .all(`%${it}%`);
     });
   });
 
   const prep = instance.prepare(
-    "SELECT * FROM product WHERE lower(product.name) LIKE ?"
+    "SELECT * FROM product WHERE product.name LIKE ?"
   );
   bench("b3:p", () => {
     productSearches.forEach((it) => {
@@ -805,14 +804,14 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
     productSearches.forEach((it) => {
       drizzle
         .select(products)
-        .where(sql`lower(${products.name}) like "%${it}%"`)
+        .where(sql`${products.name} like '%${it}%'`)
         .execute();
     });
   });
 
   const prepare = drizzle
     .select(products)
-    .where(sql`lower(${products.name}) like ${placeholder("name")}`)
+    .where(sql`${products.name} like ${placeholder("name")}`)
     .prepare();
 
   bench("drizzle:p", () => {
@@ -823,7 +822,7 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
 
   bench("knex", async () => {
     for (const it of productSearches) {
-      await knex("product").whereRaw("LOWER(name) LIKE ?", [`%${it}%`]);
+      await knex("product").whereRaw("name LIKE ?", [`%${it}%`]);
     }
   });
 
@@ -832,7 +831,7 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
       await kysely
         .selectFrom("product")
         .selectAll()
-        .where(k_sql`lower(name)`, "like", `%${it}%`)
+        .where(k_sql`name`, "like", `%${it}%`)
         .execute();
     }
   });
@@ -840,7 +839,7 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
   bench("mikro", async () => {
     for (const it of productSearches) {
       await mikro.createQueryBuilder(Product, 'p')
-      .where(`LOWER(p.name) LIKE "%${it}%"`)
+      .where(`p.name LIKE "%${it}%"`)
       .execute();
     }
     mikro.clear();
@@ -851,7 +850,7 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
       await typeorm
         .getRepository(Product)
         .createQueryBuilder("product")
-        .where("lower(product.name) like :name", { name: `%${it}%` })
+        .where("product.name like :name", { name: `%${it}%` })
         .getMany();
     }
   });
@@ -861,8 +860,7 @@ group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
       await prisma.product.findMany({
         where: {
           name: {
-            contains: it,
-            mode: 'insensitive',
+            contains: it
           },
         },
       });
@@ -1227,7 +1225,7 @@ const test = async () => {
 
   // const drz = drizzle
   //   .select(customers)
-  //   .where(sql`lower(${customers.companyName}) like ${placeholder("name")}`)
+  //   .where(sql`${customers.companyName} like ${placeholder("name")}`)
   //   .prepare();
 
   // console.log(
@@ -1237,7 +1235,7 @@ const test = async () => {
   //     .where("company_name like :company")
   //     .getSql()
   // );
-  // console.log(db("customer").whereRaw("lower(company_name) LIKE %ha%"))
+  // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
   
   for (const id of [customerIds[0]]) {
     // console.log(await mikro.findOne(m_Customer, { id }));
