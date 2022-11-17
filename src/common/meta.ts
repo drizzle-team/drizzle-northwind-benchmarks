@@ -56,7 +56,7 @@ export const supplierIds = Array.from({ length: supplierIdEnd - supplierIdStart 
 
 const productIdStart = 1;
 const productIdEnd = 78;
-export const productIds = Array.from({ length: productIdStart - productIdEnd }, (_, i) => i + productIdEnd);
+export const productIds = Array.from({ length:  productIdEnd - productIdStart  }, (_, i) => i + productIdEnd);
 
 const getRandomOrderIds = () => {
   const firstId = 10248;
