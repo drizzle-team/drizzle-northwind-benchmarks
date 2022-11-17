@@ -202,7 +202,7 @@ group("select * from customer where id = ?", () => {
   });
 });
 
-group("select * from customer where company_name like ?", () => {
+group("select * from customer where lower(company_name) like ?", () => {
   const sql1 = instance.prepare(
     "select * from customer where lower(company_name) like ?"
   );
@@ -237,7 +237,7 @@ group("select * from customer where company_name like ?", () => {
       await kysely
         .selectFrom("customer")
         .selectAll()
-        .where(k_sql`company_name`, "like", `%${it}%`)
+        .where(k_sql`lower(company_name)`, "like", `%${it}%`)
         .execute();
     }
   });
@@ -671,7 +671,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 
   bench("b3:p", () => {
     productIds.forEach((it) => {
-      sql.get(it);
+      sql.all(it);
     });
   });
 
