@@ -226,9 +226,7 @@ group("select * from customer where company_name like ?", () => {
 
   bench("knex", async () => {
     for (const it of customerSearches) {
-      await knex("customer").whereRaw("company_name LIKE ?", [
-        `%${it}%`,
-      ]);
+      await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]);
     }
   });
 
@@ -246,7 +244,7 @@ group("select * from customer where company_name like ?", () => {
     for (const it of customerSearches) {
       await mikro.find(m_Customer, {
         companyName: { $like: `%${it}%` },
-      });;
+      });
     }
     mikro.clear();
   });
@@ -838,9 +836,9 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
 
   bench("mikro", async () => {
     for (const it of productSearches) {
-      await mikro.createQueryBuilder(Product, 'p')
-      .where(`p.name LIKE "%${it}%"`)
-      .execute();
+      await mikro.find(m_Product, {
+        name: { $like: `%${it}%` },
+      });
     }
     mikro.clear();
   });
@@ -860,7 +858,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
       await prisma.product.findMany({
         where: {
           name: {
-            contains: it
+            contains: it,
           },
         },
       });
@@ -1190,8 +1188,8 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
           product: true,
         },
         where: {
-          orderId: id
-        }
+          orderId: id,
+        },
       });
     }
   });
@@ -1236,7 +1234,7 @@ const test = async () => {
   //     .getSql()
   // );
   // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
-  
+
   for (const id of [customerIds[0]]) {
     // console.log(await mikro.findOne(m_Customer, { id }));
     // console.log(
