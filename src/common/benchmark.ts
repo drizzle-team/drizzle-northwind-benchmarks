@@ -6,7 +6,7 @@ import { Database as DatabaseInit } from "../kysely/db";
 import { sql } from "drizzle-orm";
 import { placeholder } from "drizzle-orm/sql";
 import knx from "knex";
-import { DataSource, Db } from "typeorm";
+import { DataSource, Db, Like } from "typeorm";
 import { PrismaClient } from "@prisma/client";
 import {
   employees,
@@ -87,6 +87,7 @@ const getMikroOrmConnect = async () => {
   mikro = orm.em.fork();
 };
 
+// checked
 group("select * from customer", () => {
   bench("b3", () => {
     instance.prepare('select * from "customer"').all();
@@ -101,7 +102,7 @@ group("select * from customer", () => {
     drizzle.select(customers).execute();
   });
 
-  const prep = drizzle.select(customers);
+  const prep = drizzle.select(customers).prepare();
   bench("drizzle:p", () => {
     prep.execute();
   });
@@ -129,6 +130,7 @@ group("select * from customer", () => {
   });
 });
 
+// checked
 group("select * from customer where id = ?", () => {
   bench("b3", () => {
     customerIds.forEach((id) => {
@@ -137,7 +139,6 @@ group("select * from customer where id = ?", () => {
   });
 
   const sql = instance.prepare("select * from customer where id = ?");
-
   bench("b3:p", () => {
     customerIds.forEach((id) => {
       sql.get(id);
@@ -187,13 +188,17 @@ group("select * from customer where id = ?", () => {
   const repo = typeorm.getRepository(Customer);
   bench("typeorm", async () => {
     for (const id of customerIds) {
-      await repo.createQueryBuilder().where("id = :id", { id }).getOne();
+      await repo.findOne({
+        where: {
+          id,
+        },
+      });
     }
   });
 
   bench("prisma", async () => {
     for (const id of customerIds) {
-      await prisma.customer.findMany({
+      await prisma.customer.findUniqueOrThrow({
         where: {
           id,
         },
@@ -202,12 +207,13 @@ group("select * from customer where id = ?", () => {
   });
 });
 
+// checked
 group("select * from customer where company_name like ?", () => {
   const sql1 = instance.prepare(
     "select * from customer where company_name like ?"
   );
 
-  bench("b3", () => {
+  bench("b3:p", () => {
     customerSearches.forEach((it) => {
       sql1.all(`%${it}%`);
     });
@@ -226,6 +232,7 @@ group("select * from customer where company_name like ?", () => {
 
   bench("knex", async () => {
     for (const it of customerSearches) {
+      // ??
       await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]);
     }
   });
@@ -252,10 +259,11 @@ group("select * from customer where company_name like ?", () => {
   const repo = typeorm.getRepository(Customer);
   bench("typeorm", async () => {
     for (const it of customerSearches) {
-      await repo
-        .createQueryBuilder()
-        .where("company_name like :company", { company: `%${it}%` })
-        .getMany();
+      await repo.find({
+        where: {
+          companyName: Like(`%${it}%`),
+        },
+      });
     }
   });
 
@@ -272,6 +280,7 @@ group("select * from customer where company_name like ?", () => {
   });
 });
 
+// checked
 group('"SELECT * FROM employee"', () => {
   bench("b3", () => {
     instance.prepare("SELECT * FROM employee").all();
@@ -313,8 +322,8 @@ group('"SELECT * FROM employee"', () => {
   });
 });
 
-/////
-group("select * from employee where id = ?", () => {
+// checked
+group("select * from employee where id = ? left join reportee", () => {
   bench("b3", () => {
     employeeIds.forEach((it) => {
       instance
@@ -340,7 +349,7 @@ group("select * from employee where id = ?", () => {
         ON e2.id = e1.reports_to
         WHERE e1.id = ?`
         )
-        .get(it);
+        .all(it);
     });
   });
 
@@ -368,7 +377,7 @@ group("select * from employee where id = ?", () => {
   );
   bench("b3:p", () => {
     employeeIds.forEach((id) => {
-      sql.get(id);
+      sql.all(id);
     });
   });
 
@@ -466,12 +475,12 @@ group("select * from employee where id = ?", () => {
 
   bench("typeorm", async () => {
     for (const id of employeeIds) {
-      await typeorm
-        .getRepository(Employee)
-        .createQueryBuilder("employee")
-        .leftJoinAndSelect("employee.recipient", "recipients")
-        .where("employee.id = :id", { id })
-        .getOne();
+      await typeorm.getRepository(Employee).findOne({
+        where: {
+          id,
+        },
+        relations: ["recipient"],
+      });
     }
   });
 
@@ -489,8 +498,7 @@ group("select * from employee where id = ?", () => {
   });
 });
 
-/////
-
+// checked
 group("SELECT * FROM supplier", () => {
   bench("b3", () => {
     instance.prepare("SELECT * FROM supplier").all();
@@ -533,8 +541,7 @@ group("SELECT * FROM supplier", () => {
   });
 });
 
-/////
-
+// checked
 group("select * from supplier where id = ?", () => {
   bench("b3", () => {
     supplierIds.forEach((it) => {
@@ -606,7 +613,7 @@ group("select * from supplier where id = ?", () => {
   });
 });
 
-/////
+// checked
 group("SELECT * FROM product", () => {
   bench("b3", () => {
     instance.prepare("SELECT * FROM product").all();
@@ -621,8 +628,7 @@ group("SELECT * FROM product", () => {
     drizzle.select(products).execute();
   });
 
-  const prep = drizzle.select(products);
-
+  const prep = drizzle.select(products).prepare();
   bench("drizzle:p", () => {
     prep.execute();
   });
@@ -649,7 +655,7 @@ group("SELECT * FROM product", () => {
   });
 });
 
-////
+// checked
 group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
   bench("b3", () => {
     productIds.forEach((it) => {
@@ -659,7 +665,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
         ON product.supplier_id = supplier.id
         WHERE product.id = ?`
         )
-        .get(it);
+        .all(it);
     });
   });
 
@@ -671,7 +677,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 
   bench("b3:p", () => {
     productIds.forEach((it) => {
-      sql.get(it);
+      sql.all(it);
     });
   });
 
@@ -758,10 +764,12 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
     for (const id of productIds) {
       await typeorm
         .getRepository(Product)
-        .createQueryBuilder("product")
-        .leftJoinAndSelect("product.supplier", "supplier")
-        .where("product.id = :id", { id })
-        .getOne();
+        .findOne({
+          where: {
+            id
+          },
+          relations: ["supplier"]
+        })
     }
   });
 
@@ -779,7 +787,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
   });
 });
 
-////////////
+// checked
 group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   bench("b3", () => {
     productSearches.forEach((it) => {
@@ -802,7 +810,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
     productSearches.forEach((it) => {
       drizzle
         .select(products)
-        .where(sql`${products.name} like '%${it}%'`)
+        .where(like(products.name, `'%${it}%'`))
         .execute();
     });
   });
@@ -847,9 +855,11 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
     for (const it of productSearches) {
       await typeorm
         .getRepository(Product)
-        .createQueryBuilder("product")
-        .where("product.name like :name", { name: `%${it}%` })
-        .getMany();
+        .find({
+          where: {
+            name: Like(`%${it}%`)
+          }
+        })
     }
   });
 
@@ -866,6 +876,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   });
 });
 
+// checked
 group("select all order with sum and count", () => {
   bench("b3", () => {
     instance
@@ -979,6 +990,7 @@ group("select all order with sum and count", () => {
   // });
 
   bench("typeorm", async () => {
+    // ??
     await typeorm
       .getRepository(Order)
       .createQueryBuilder("order")
@@ -1020,8 +1032,7 @@ group("select all order with sum and count", () => {
   });
 });
 
-////
-
+// checked
 group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("b3", () => {
     orderIds.forEach((it) => {
@@ -1234,7 +1245,12 @@ const test = async () => {
   //     .getSql()
   // );
   // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
-
+  console.log(await typeorm.getRepository(Employee).findOne({
+    where: {
+      id: 1,
+    },
+    relations: ["recipient"],
+  }));
   for (const id of [customerIds[0]]) {
     // console.log(await mikro.findOne(m_Customer, { id }));
     // console.log(

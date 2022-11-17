@@ -12,13 +12,13 @@ import { Detail } from "./details";
 @Entity({ name: "product" })
 export class Product {
   @PrimaryColumn({ type: "integer" })
-    id: number;
+  id: number;
 
   @Column({ name: "name", type: "varchar" })
-    name: string;
+  name: string;
 
   @Column({ name: "quantity_per_unit", type: "varchar" })
-    qtPerUnit: string;
+  qtPerUnit: string;
 
   @Column({
     name: "unit_price",
@@ -27,28 +27,28 @@ export class Product {
     scale: 2,
     default: 0,
   })
-    unitPrice: number;
+  unitPrice: number;
 
   @Column({ name: "units_in_stock", type: "integer" })
-    unitsInStock: number;
+  unitsInStock: number;
 
   @Column({ name: "units_on_order", type: "integer" })
-    unitsOnOrder: number;
+  unitsOnOrder: number;
 
   @Column({ name: "reorder_level", type: "integer" })
-    reorderLevel: number;
+  reorderLevel: number;
 
   @Column({ name: "discontinued", type: "integer" })
-    discontinued: number;
+  discontinued: number;
 
   @Column({ name: "supplier_id", type: "integer" })
-    supplierId: number;
+  supplierId: number;
   @ManyToOne(() => Supplier, (supplier) => supplier.products, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "supplier_id" })
-    supplier: Supplier;
+  supplier: Supplier;
 
   @OneToMany(() => Detail, (detail) => detail.product)
-    details: Detail[];
+  details: Detail[];
 }
