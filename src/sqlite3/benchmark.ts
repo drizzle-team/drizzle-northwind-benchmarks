@@ -14,12 +14,12 @@ export const startSqlite3Benches = async () => {
   });
   bench("Sqlite3 Driver Customers: getInfo", async () => {
     for (const id of customerIds) {
-      await db.all("SELECT * FROM customer WHERE customer.id = $1", [id]);
+      await db.get("SELECT * FROM customer WHERE customer.id = $1", [id]);
     }
   });
   bench("Sqlite3 Driver Customers: search", async () => {
     for (const companyName of customerSearches) {
-      await db.all("SELECT * FROM customer WHERE customer.company_name LIKE ?", [`%${companyName}%`]);
+      await db.all("SELECT * FROM customer WHERE LOWER(customer.company_name) LIKE ?", [`%${companyName}%`]);
     }
   });
 
@@ -28,7 +28,7 @@ export const startSqlite3Benches = async () => {
   });
   bench("Sqlite3 Driver Employees: getInfo", async () => {
     for (const id of employeeIds) {
-      await db.all(
+      await db.get(
         `select e1.*,
       e2.id as e2_id,
       e2.last_name as e2_last_name,
@@ -58,7 +58,7 @@ export const startSqlite3Benches = async () => {
     await db.all("select * from \"supplier\"");
   });
   bench("Sqlite3 Driver Suppliers: getInfo", async () => {
-    for (const id of supplierIds) { await db.all("select * from \"supplier\" where \"supplier\".\"id\" = ?", [id]); }
+    for (const id of supplierIds) { await db.get("select * from \"supplier\" where \"supplier\".\"id\" = ?", [id]); }
   });
 
   bench("Sqlite3 Driver Products: getAll", async () => {
@@ -66,7 +66,7 @@ export const startSqlite3Benches = async () => {
   });
   bench("Sqlite3 Driver Products: getInfo", async () => {
     for (const id of productIds) {
-      await db.all(
+      await db.get(
         `select product.*, supplier.id as s_id, company_name, contact_name,
       contact_title, address, city, region, postal_code, country, phone from product
       left join supplier on product.supplier_id = supplier.id where product.id = ?`,
@@ -75,7 +75,7 @@ export const startSqlite3Benches = async () => {
     }
   });
   bench("Sqlite3 Driver Products: search", async () => {
-    for (const name of productSearches) { await db.all("select * from \"product\" where \"product\".\"name\" like ?", [`%${name}%`]); }
+    for (const name of productSearches) { await db.all("select * from \"product\" where LOWER(\"product\".\"name\") like ?", [`%${name}%`]); }
   });
 
   bench("Sqlite3 Driver Orders: getAll", async () => {
