@@ -780,21 +780,21 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 });
 
 ////////////
-group("SELECT * FROM product WHERE product.name LIKE ?", () => {
+group("SELECT * FROM product WHERE lower(product.name) LIKE ?", () => {
   bench("b3", () => {
     productSearches.forEach((it) => {
       instance
-        .prepare("SELECT * FROM product WHERE product.name LIKE ?")
+        .prepare("SELECT * FROM product WHERE lower(product.name) LIKE ?")
         .all(`%${it}%`);
     });
   });
 
   const prep = instance.prepare(
-    "SELECT * FROM product WHERE product.name LIKE ?"
+    "SELECT * FROM product WHERE lower(product.name) LIKE ?"
   );
   bench("b3:p", () => {
     productSearches.forEach((it) => {
-      prep.all(it);
+      prep.all(`%${it}%`);
     });
   });
 
@@ -802,7 +802,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
     productSearches.forEach((it) => {
       drizzle
         .select(products)
-        .where(like(products.name, `%${it}%`))
+        .where(sql`lower(${products.name}) like "%${it}%"`)
         .execute();
     });
   });
