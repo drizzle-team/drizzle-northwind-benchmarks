@@ -873,112 +873,111 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   });
 });
 
-// checked
 group("select all order with sum and count", () => {
-  // bench("b3", () => {
-  //   instance
-  //     .prepare(
-  //       `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
-  //       COUNT(od.product_id) AS products_count,
-  //       SUM(od.quantity) AS quantity_sum,
-  //       SUM(od.quantity * unit_price) AS total_price
-  //       FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-  //       GROUP BY o.id
-  //       ORDER BY o.id ASC`
-  //     )
-  //     .all();
-  // });
+  bench("b3", () => {
+    instance
+      .prepare(
+        `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+        COUNT(od.product_id) AS products_count,
+        SUM(od.quantity) AS quantity_sum,
+        SUM(od.quantity * unit_price) AS total_price
+        FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+        GROUP BY o.id
+        ORDER BY o.id ASC`
+      )
+      .all();
+  });
 
-  // const prep = instance.prepare(
-  //   `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
-  //     COUNT(od.product_id) AS products_count,
-  //     SUM(od.quantity) AS quantity_sum,
-  //     SUM(od.quantity * unit_price) AS total_price
-  //     FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-  //     GROUP BY o.id
-  //     ORDER BY o.id ASC`
-  // );
-  // bench("b3:p", () => {
-  //   prep.all();
-  // });
+  const prep = instance.prepare(
+    `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+      COUNT(od.product_id) AS products_count,
+      SUM(od.quantity) AS quantity_sum,
+      SUM(od.quantity * unit_price) AS total_price
+      FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+      GROUP BY o.id
+      ORDER BY o.id ASC`
+  );
+  bench("b3:p", () => {
+    prep.all();
+  });
 
-  // bench("drizzle", () => {
-  //   drizzle
-  //     .select(orders)
-  //     .fields({
-  //       id: orders.id,
-  //       shippedDate: orders.shippedDate,
-  //       shipName: orders.shipName,
-  //       shipCity: orders.shipCity,
-  //       shipCountry: orders.shipCountry,
-  //       productsCount: sql`count(${details.productId})`.as<number>(),
-  //       quantitySum: sql`sum(${details.quantity})`.as<number>(),
-  //       totalPrice:
-  //         sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
-  //     })
-  //     .leftJoin(details, eq(orders.id, details.orderId))
-  //     .groupBy(orders.id)
-  //     .orderBy(asc(orders.id))
-  //     .execute();
-  // });
+  bench("drizzle", () => {
+    drizzle
+      .select(orders)
+      .fields({
+        id: orders.id,
+        shippedDate: orders.shippedDate,
+        shipName: orders.shipName,
+        shipCity: orders.shipCity,
+        shipCountry: orders.shipCountry,
+        productsCount: sql`count(${details.productId})`.as<number>(),
+        quantitySum: sql`sum(${details.quantity})`.as<number>(),
+        totalPrice:
+          sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+      })
+      .leftJoin(details, eq(orders.id, details.orderId))
+      .groupBy(orders.id)
+      .orderBy(asc(orders.id))
+      .execute();
+  });
 
-  // const prepare = drizzle
-  //   .select(orders)
-  //   .fields({
-  //     id: orders.id,
-  //     shippedDate: orders.shippedDate,
-  //     shipName: orders.shipName,
-  //     shipCity: orders.shipCity,
-  //     shipCountry: orders.shipCountry,
-  //     productsCount: sql`count(${details.productId})`.as<number>(),
-  //     quantitySum: sql`sum(${details.quantity})`.as<number>(),
-  //     totalPrice:
-  //       sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
-  //   })
-  //   .leftJoin(details, eq(orders.id, details.orderId))
-  //   .groupBy(orders.id)
-  //   .orderBy(asc(orders.id))
-  //   .prepare();
+  const prepare = drizzle
+    .select(orders)
+    .fields({
+      id: orders.id,
+      shippedDate: orders.shippedDate,
+      shipName: orders.shipName,
+      shipCity: orders.shipCity,
+      shipCountry: orders.shipCountry,
+      productsCount: sql`count(${details.productId})`.as<number>(),
+      quantitySum: sql`sum(${details.quantity})`.as<number>(),
+      totalPrice:
+        sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+    })
+    .leftJoin(details, eq(orders.id, details.orderId))
+    .groupBy(orders.id)
+    .orderBy(asc(orders.id))
+    .prepare();
 
-  // bench("drizzle:p", () => {
-  //   prepare.execute();
-  // });
+  bench("drizzle:p", () => {
+    prepare.execute();
+  });
 
-  // bench("knex", async () => {
-  //   await knex("order")
-  //     .select([
-  //       "order.id",
-  //       "order.shipped_date",
-  //       "order.ship_name",
-  //       "order.ship_city",
-  //       "order.ship_country",
-  //     ])
-  //     .leftJoin("order_detail", "order_detail.order_id", "order.id")
-  //     .count("product_id as products_count")
-  //     .sum("quantity as quantity_sum")
-  //     .sum({ total_price: knex.raw("?? * ??", ["quantity", "unit_price"]) })
-  //     .groupBy("order.id")
-  //     .orderBy("order.id", "asc");
-  // });
+  bench("knex", async () => {
+    await knex("order")
+      .select([
+        "order.id",
+        "order.shipped_date",
+        "order.ship_name",
+        "order.ship_city",
+        "order.ship_country",
+      ])
+      .leftJoin("order_detail", "order_detail.order_id", "order.id")
+      .count("product_id as products_count")
+      .sum("quantity as quantity_sum")
+      .sum({ total_price: knex.raw("?? * ??", ["quantity", "unit_price"]) })
+      .groupBy("order.id")
+      .orderBy("order.id", "asc");
+  });
 
-  // bench("kysely", async () => {
-  //   await kysely
-  //     .selectFrom("order")
-  //     .select([
-  //       "order.id",
-  //       "order.shipped_date",
-  //       "order.ship_name",
-  //       "order.ship_city",
-  //       "order.ship_country",
-  //       kysely.fn.count("product_id").as("products_count"),
-  //       kysely.fn.sum("quantity").as("quantity_sum"),
-  //       k_sql`SUM(quantity * unit_price)`.as("total_price"),
-  //     ])
-  //     .leftJoin("order_detail", "order_detail.order_id", "order.id")
-  //     .groupBy("order.id")
-  //     .orderBy("order.id", "asc")
-  //     .execute();
-  // });
+  bench("kysely", async () => {
+    await kysely
+      .selectFrom("order")
+      .select([
+        "order.id",
+        "order.shipped_date",
+        "order.ship_name",
+        "order.ship_city",
+        "order.ship_country",
+        kysely.fn.count("product_id").as("products_count"),
+        kysely.fn.sum("quantity").as("quantity_sum"),
+        k_sql`SUM(quantity * unit_price)`.as("total_price"),
+      ])
+      .leftJoin("order_detail", "order_detail.order_id", "order.id")
+      .groupBy("order.id")
+      .orderBy("order.id", "asc")
+      .execute();
+  });
 
   // query fails with large amount of data
   // bench("mikro", async () => {

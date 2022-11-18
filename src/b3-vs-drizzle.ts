@@ -1,6 +1,6 @@
 import { bench, group, run } from "mitata";
 import Database from "better-sqlite3";
-import { eq, like } from "drizzle-orm/expressions";
+import { asc, eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 import { sql } from "drizzle-orm";
 import { placeholder } from "drizzle-orm/sql";
@@ -64,6 +64,16 @@ const sql9 = instance.prepare(
  WHERE o.id = ?`
 );
 
+const sql10 = instance.prepare(
+  `SELECT o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
+      COUNT(od.product_id) AS products_count,
+      SUM(od.quantity) AS quantity_sum,
+      SUM(od.quantity * unit_price) AS total_price
+      FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
+      GROUP BY o.id
+      ORDER BY o.id ASC`
+);
+
 group({ name: "better-sqlite3", summary: false }, () => {
   bench("select * from customer", () => {
     sql1.all();
@@ -113,6 +123,11 @@ group({ name: "better-sqlite3", summary: false }, () => {
       });
     }
   );
+
+
+  bench("select all order with sum and count", () => {
+    sql10.all();
+  });
 });
 
 const d1 = drizzle.select(customers).prepare();
@@ -139,12 +154,30 @@ const d8 = drizzle
   .select(products)
   .where(sql`${products.name} like ${placeholder("name")}`)
   .prepare();
-  
+
 const d9 = drizzle
   .select(orders)
   .leftJoin(details, eq(orders.id, details.orderId))
   .leftJoin(products, eq(details.productId, products.id))
   .where(eq(orders.id, placeholder("orderId")))
+  .prepare();
+
+const d10 = drizzle
+  .select(orders)
+  .fields({
+    id: orders.id,
+    shippedDate: orders.shippedDate,
+    shipName: orders.shipName,
+    shipCity: orders.shipCity,
+    shipCountry: orders.shipCountry,
+    productsCount: sql`count(${details.productId})`.as<number>(),
+    quantitySum: sql`sum(${details.quantity})`.as<number>(),
+    totalPrice:
+      sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+  })
+  .leftJoin(details, eq(orders.id, details.orderId))
+  .groupBy(orders.id)
+  .orderBy(asc(orders.id))
   .prepare();
 
 group({ name: "drizzle", summary: false }, () => {
@@ -194,6 +227,10 @@ group({ name: "drizzle", summary: false }, () => {
       });
     }
   );
+
+  bench("select all order with sum and count", () => {
+    d10.execute();
+  });
 });
 
 const main = async () => {
