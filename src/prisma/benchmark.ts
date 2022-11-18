@@ -1,6 +1,14 @@
 import { run, bench } from "mitata";
 import { PrismaClient } from "@prisma/client";
-import { customerIds, employeeIds, orderIds, productIds, searchesProduct, searchesCustomer, supplierIds } from "@/common/meta";
+import {
+  customerIds,
+  employeeIds,
+  orderIds,
+  productIds,
+  productSearches,
+  customerSearches,
+  supplierIds,
+} from "@/common/meta";
 
 const prisma = new PrismaClient();
 
@@ -17,11 +25,12 @@ bench("Prisma ORM Customers: getInfo", async () => {
   }
 });
 bench("Prisma ORM Customers: search", async () => {
-  for (const companyName of searchesCustomer) {
+  for (const it of customerSearches) {
     await prisma.customer.findMany({
       where: {
         companyName: {
-          contains: companyName,
+          contains: it,
+          mode: 'insensitive',
         },
       },
     });
@@ -70,11 +79,12 @@ bench("Prisma ORM Products: getInfo", async () => {
   }
 });
 bench("Prisma ORM Products: search", async () => {
-  for (const name of searchesProduct) {
+  for (const it of productSearches) {
     await prisma.product.findMany({
       where: {
         name: {
-          contains: name,
+          contains: it,
+          mode: 'insensitive',
         },
       },
     });
@@ -82,14 +92,29 @@ bench("Prisma ORM Products: search", async () => {
 });
 
 bench("Prisma ORM Orders: getAll", async () => {
-  await prisma.$queryRaw`
-    select o.id, o.shipped_date, o.ship_name, o.ship_city, o.ship_country,
-      count(od.product_id) as products_count, 
-      sum(od.quantity) as quantity_sum, 
-      sum(od.quantity * od.unit_price) as total_price
-    from "order" as o left join "order_detail" as od on o.id = od.order_id
-    group by o.id 
-    order by o.id asc`;
+  const result = await prisma.order.findMany({
+    include: {
+      details: true,
+    },
+  });
+  const orders = result.map((item) => {
+    return {
+      id: item.id,
+      shippedDate: item.shippedDate,
+      shipName: item.shipName,
+      shipCity: item.shipCity,
+      shipCountry: item.shipCountry,
+      productsCount: item.details.length,
+      quantitySum: item.details.reduce(
+        (sum, deteil) => (sum += +deteil.quantity),
+        0
+      ),
+      totalPrice: item.details.reduce(
+        (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+        0
+      ),
+    };
+  });
 });
 
 bench("Prisma ORM Orders: getInfo", async () => {

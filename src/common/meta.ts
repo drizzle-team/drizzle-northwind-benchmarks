@@ -19,7 +19,7 @@ export const customerIds = [
 ]
 
 // prettier-ignore
-export const searchesCustomer = [
+export const customerSearches = [
   "ve", "ey", "or", "bb", "te",
   "ab", "ca", "ki", "ap", "be",
   "ct", "hi", "er", "pr", "pi",
@@ -33,7 +33,7 @@ export const searchesCustomer = [
 ];
 
 // prettier-ignore
-export const searchesProduct = [
+export const productSearches = [
   "ha", "ey", "or", "po", "te",
   "ab", "er", "ke", "ap", "be",
   "en", "au", "ra", "ti", "su",
@@ -56,7 +56,7 @@ export const supplierIds = Array.from({ length: supplierIdEnd - supplierIdStart 
 
 const productIdStart = 1;
 const productIdEnd = 78;
-export const productIds = Array.from({ length: productIdEnd - productIdStart   }, (_, i) => i + productIdEnd);
+export const productIds = Array.from({ length:  productIdEnd - productIdStart  }, (_, i) => i + productIdEnd);
 
 const getRandomOrderIds = () => {
   const firstId = 10248;

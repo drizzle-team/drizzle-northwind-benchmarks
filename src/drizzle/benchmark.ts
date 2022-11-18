@@ -1,5 +1,5 @@
 import { run, bench } from "mitata";
-import { asc, eq, inArray, like } from "drizzle-orm/expressions";
+import { asc, eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
@@ -12,7 +12,7 @@ import {
   orders,
   details,
 } from "./schema";
-import { customerIds, employeeIds, orderIds, productIds, searchesCustomer, searchesProduct, supplierIds } from "@/common/meta";
+import { customerIds, employeeIds, orderIds, productIds, customerSearches, productSearches, supplierIds } from "@/common/meta";
 
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
@@ -27,9 +27,9 @@ bench("Drizzle-ORM Customers: getInfo", () => {
 });
 
 bench("Drizzle-ORM Customers: search", () => {
-  searchesCustomer.forEach((companyName) => {
+  customerSearches.forEach((it) => {
     db.select(customers)
-      .where(like(customers.companyName, `%${companyName}%`))
+      .where(sql`lower(${customers.companyName}) like "%${it}%"`)
       .execute();
   });
 });
@@ -73,9 +73,9 @@ bench("Drizzle-ORM Products: getInfo", () => {
 });
 
 bench("Drizzle-ORM Products: search", () => {
-  searchesProduct.forEach((name) => {
+  productSearches.forEach((it) => {
     db.select(products)
-      .where(like(products.name, `%${name}%`))
+      .where(sql`lower(${products.name}) like "%${it}%"`)
       .execute();
   });
 });

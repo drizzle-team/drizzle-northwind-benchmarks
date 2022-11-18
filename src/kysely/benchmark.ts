@@ -7,8 +7,8 @@ import {
   employeeIds,
   orderIds,
   productIds,
-  searchesProduct,
-  searchesCustomer,
+  productSearches,
+  customerSearches,
   supplierIds,
 } from "@/common/meta";
 
@@ -31,11 +31,11 @@ bench("Kysely ORM Customers: getInfo", async () => {
   }
 });
 bench("Kysely ORM Customers: search", async () => {
-  for (const companyName of searchesCustomer) {
+  for (const it of customerSearches) {
     await db
       .selectFrom("customer")
       .selectAll()
-      .where(sql`company_name`, "like", `%${companyName}%`)
+      .where(sql`lower(company_name)`, "like", `%${it}%`)
       .execute();
   }
 });
@@ -122,11 +122,11 @@ bench("Kysely ORM Products: getInfo", async () => {
   }
 });
 bench("Kysely ORM Products: search", async () => {
-  for (const name of searchesProduct) {
+  for (const it of productSearches) {
     await db
       .selectFrom("product")
       .selectAll()
-      .where(sql`name`, "like", `%${name}%`)
+      .where(sql`lower(name)`, "like", `%${it}%`)
       .execute();
   }
 });

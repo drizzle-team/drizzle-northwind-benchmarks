@@ -12,7 +12,7 @@ import { Detail } from "./details";
 @Entity({ name: "product" })
 export class Product {
   @PrimaryColumn({ type: "integer" })
-    id: number;
+  id: number;
 
   @Column({ name: "name", type: "varchar" })
     name: string;
@@ -42,7 +42,7 @@ export class Product {
     discontinued: number;
 
   @Column({ name: "supplier_id", type: "integer" })
-    supplierId: number;
+  supplierId: number;
   @ManyToOne(() => Supplier, (supplier) => supplier.products, {
     onDelete: "CASCADE",
   })

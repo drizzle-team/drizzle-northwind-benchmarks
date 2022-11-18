@@ -33,6 +33,6 @@ export class Product {
   @ManyToOne(() => Supplier)
     supplier: Supplier;
 
-  @OneToMany(() => Detail, (detail) => detail.product, { cascade: [Cascade.ALL] })
+  @OneToMany(() => Detail, (detail) => detail.product)
     details = new Collection<Detail>(this);
 }

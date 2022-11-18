@@ -5,8 +5,8 @@ import {
   employeeIds,
   orderIds,
   productIds,
-  searchesCustomer,
-  searchesProduct,
+  customerSearches,
+  productSearches,
   supplierIds,
 } from "@/common/meta";
 
@@ -23,8 +23,8 @@ bench("Better-sqlite3 Customers: getInfo", () => {
 });
 
 bench("Better-sqlite3 Customers: search", () => {
-  searchesCustomer.forEach((it) => {
-    db.prepare("SELECT * FROM customer WHERE customer.company_name LIKE ?").all(
+  customerSearches.forEach((it) => {
+    db.prepare("SELECT * FROM customer WHERE LOWER(customer.company_name) LIKE ?").all(
       `%${it}%`
     );
   });
@@ -86,8 +86,8 @@ bench("Better-sqlite3 Products: getInfo", () => {
 });
 
 bench("Better-sqlite3 Products: search", () => {
-  searchesProduct.forEach((it) => {
-    db.prepare("SELECT * FROM product WHERE product.name LIKE ?").all(
+  productSearches.forEach((it) => {
+    db.prepare("SELECT * FROM product WHERE LOWER(product.name) LIKE ?").all(
       `%${it}%`
     );
   });
@@ -117,6 +117,6 @@ bench("Better-sqlite3 order: getInfo", async () => {
 });
 
 const main = async () => {
-  await run();
+  await run();  
 };
 main();

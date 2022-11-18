@@ -7,8 +7,8 @@ import {
   employeeIds,
   orderIds,
   productIds,
-  searchesProduct,
-  searchesCustomer,
+  productSearches,
+  customerSearches,
   supplierIds,
 } from "@/common/meta";
 import { Customer } from "./entities/customers";
@@ -17,6 +17,7 @@ import { Employee } from "./entities/employees";
 import { Order } from "./entities/orders";
 import { Product } from "./entities/products";
 import { Supplier } from "./entities/suppliers";
+import { details } from "@/drizzle/schema";
 
 let db;
 
@@ -28,9 +29,7 @@ const getConnect = async () => {
     metadataProvider: TsMorphMetadataProvider,
   });
   db = orm.em.fork();
-}
-
-
+};
 
 bench("MikroORM Customers: getAll", async () => {
   await db.find(Customer, {});
@@ -41,10 +40,10 @@ bench("MikroORM Customers: getInfo", async () => {
   }
 });
 bench("MikroORM Customers: search", async () => {
-  for (const companyName of searchesProduct) {
-    await db.find(Customer, {
-      companyName: { $like: `%${companyName}%` },
-    });
+  for (const it of customerSearches) {
+    await db.createQueryBuilder(Customer, 'c')
+      .where(`LOWER(c.company_name) LIKE "%${it}%"`)
+      .execute();
   }
 });
 bench("MikroORM Employees: getAll", async () => {
@@ -72,12 +71,13 @@ bench("MikroORM Products: getInfo", async () => {
   }
 });
 bench("MikroORM Products: search", async () => {
-  for (const name of searchesCustomer) {
-    await db.find(Product, {
-      name: { $like: `%${name}%` },
-    });
+  for (const it of productSearches) {
+    await db.createQueryBuilder(Product, 'p')
+      .where(`LOWER(p.name) LIKE "%${it}%"`)
+      .execute();
   }
 });
+
 bench("MikroORM Orders: getAll", async () => {
   await db
     .createQueryBuilder(Order, "o")
@@ -103,7 +103,23 @@ bench("MikroORM Orders: getInfo", async () => {
 });
 
 const main = async () => {
-  await getConnect()
-  await run();
+  // await getConnect()
+
+  const orm = await MikroORM.init<SqliteDriver>({
+    type: "sqlite",
+    dbName: "nw.sqlite",
+    entities: [Customer, Employee, Order, Supplier, Product, Detail],
+    metadataProvider: TsMorphMetadataProvider,
+  });
+  const db = orm.em.fork();
+  const repo = db.getRepository(Order);
+  console.log(await repo.find({}, { populate: ["details"] }));
+
+  console.log(
+    JSON.stringify(await db.find(Order, {}, { populate: ["details"] }))
+  );
+  // console.log( await db.find(Detail, {}, { populate: ["order", "product"] }));
+
+  // await run();
 };
 main();

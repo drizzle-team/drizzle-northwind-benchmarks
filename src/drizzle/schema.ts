@@ -77,8 +77,6 @@ export const suppliers = sqliteTable("supplier", {
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
   phone: text("phone").notNull(),
-  fax: text("fax"),
-  home_page: text("home_page"),
 });
 
 export type Supplier = InferModel<typeof suppliers>;
@@ -92,7 +90,6 @@ export const products = sqliteTable("product", {
   unitsOnOrder: integer("units_on_order").notNull(),
   reorderLevel: integer("reorder_level").notNull(),
   discontinued: integer("discontinued").notNull(),
-  categoryId: text("category_id").notNull(),
 
   supplierId: integer("supplier_id").notNull()
     .references(() => suppliers.id, { onDelete: "cascade" }),
