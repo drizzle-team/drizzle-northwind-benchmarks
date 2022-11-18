@@ -32,7 +32,7 @@ import { Order } from "@/typeorm/entities/orders";
 import { Product } from "@/typeorm/entities/products";
 import { Detail } from "@/typeorm/entities/details";
 import { Kysely, SqliteDialect, sql as k_sql } from "kysely";
-import { MemoryCacheAdapter, MikroORM, QueryOrder } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
 import { SqlEntityManager, SqliteDriver } from "@mikro-orm/sqlite";
 import { Customer as m_Customer } from "@/mikro/entities/customers";
