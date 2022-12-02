@@ -48,6 +48,6 @@ export class Order {
   @ManyToOne(() => Employee)
     employee: Employee;
 
-  @OneToMany(() => Detail, (detail) => detail.order)
+  @OneToMany(() => Detail, (detail) => detail.order, { cascade: [Cascade.ALL] })
     details = new Collection<Detail>(this);
 }

@@ -90,21 +90,21 @@ const getMikroOrmConnect = async () => {
 // checked
 group("select * from customer", () => {
   bench("b3", () => {
-    instance.prepare("select * from \"customer\"").all();
+    instance.prepare("select * from customer").all();
   });
 
-  const sql = instance.prepare("select * from \"customer\"");
+  const sql = instance.prepare("select * from customer");
   bench("b3:p", () => {
     sql.all();
   });
 
   bench("drizzle", () => {
-    drizzle.select(customers).execute();
+    drizzle.select(customers).all();
   });
 
   const prep = drizzle.select(customers).prepare();
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -147,7 +147,7 @@ group("select * from customer where id = ?", () => {
 
   bench("drizzle", () => {
     customerIds.forEach((id) => {
-      drizzle.select(customers).where(eq(customers.id, id)).execute();
+      drizzle.select(customers).where(eq(customers.id, id)).get();
     });
   });
 
@@ -158,7 +158,7 @@ group("select * from customer where id = ?", () => {
 
   bench("drizzle:p", () => {
     customerIds.forEach((id) => {
-      prepared.execute({ userId: id });
+      prepared.get({ userId: id });
     });
   });
 
@@ -226,7 +226,7 @@ group("select * from customer where company_name like ?", () => {
 
   bench("drizzle:p", () => {
     customerSearches.forEach((it) => {
-      drz.execute({ name: `%${it}%` });
+      drz.all({ name: `%${it}%` });
     });
   });
 
@@ -291,12 +291,12 @@ group('"SELECT * FROM employee"', () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(employees).execute();
+    drizzle.select(employees).all();
   });
 
   const prep = drizzle.select(employees);
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -337,12 +337,15 @@ group("select * from employee where id = ? left join reportee", () => {
         e2.hire_date AS e2_hire_date,
         e2.address AS e2_address,
         e2.city AS e2_city,
+        e2.region AS e2_region,
         e2.postal_code AS e2_postal_code,
         e2.country AS e2_country,
         e2.home_phone AS e2_home_phone,
         e2.extension AS e2_extension,
+        e2.photo AS e2_photo,
         e2.notes AS e2_notes,
-        e2.reports_to AS e2_reports_to
+        e2.reports_to AS e2_reports_to,
+        e2.photo_path AS e2_photo_path
         FROM employee AS e1
         LEFT JOIN employee AS e2
         ON e2.id = e1.reports_to
@@ -363,12 +366,15 @@ group("select * from employee where id = ? left join reportee", () => {
     e2.hire_date AS e2_hire_date,
     e2.address AS e2_address,
     e2.city AS e2_city,
+    e2.region AS e2_region,
     e2.postal_code AS e2_postal_code,
     e2.country AS e2_country,
     e2.home_phone AS e2_home_phone,
     e2.extension AS e2_extension,
+    e2.photo AS e2_photo,
     e2.notes AS e2_notes,
-    e2.reports_to AS e2_reports_to
+    e2.reports_to AS e2_reports_to,
+    e2.photo_path AS e2_photo_path
     FROM employee AS e1
     LEFT JOIN employee AS e2
     ON e2.id = e1.reports_to
@@ -382,13 +388,12 @@ group("select * from employee where id = ? left join reportee", () => {
 
   bench("drizzle", () => {
     const e2 = alias(employees, "recipient");
-
     employeeIds.forEach((id) => {
       drizzle
         .select(employees)
         .leftJoin(e2, eq(e2.id, employees.reportsTo))
         .where(eq(employees.id, id))
-        .execute();
+        .all();
     });
   });
 
@@ -401,7 +406,7 @@ group("select * from employee where id = ? left join reportee", () => {
 
   bench("drizzle:p", () => {
     employeeIds.forEach((id) => {
-      prep.execute({ employeeId: id });
+      prep.all({ employeeId: id });
     });
   });
 
@@ -419,12 +424,15 @@ group("select * from employee where id = ? left join reportee", () => {
           "e2.hire_date as e2_hire_date",
           "e2.address as e2_address",
           "e2.city as e2_city",
+          "e2.region as e2_region",
           "e2.postal_code as e2_postal_code",
           "e2.country as e2_country",
           "e2.home_phone as e2_home_phone",
           "e2.extension as e2_extension",
+          "e2.photo as e2_photo",
           "e2.notes as e2_notes",
           "e2.reports_to as e2_reports_to",
+          "e2.photo_path AS e2_photo_path",
         ])
         .where("e1.id", "=", id)
         .leftJoin("employee as e2", "e1.reports_to", "e2.id");
@@ -450,12 +458,15 @@ group("select * from employee where id = ? left join reportee", () => {
               "hire_date as e2_hire_date",
               "address as e2_address",
               "city as e2_city",
+              "region as e2_region",
               "postal_code as e2_postal_code",
               "country as e2_country",
               "home_phone as e2_home_phone",
               "extension as e2_extension",
+              "photo as e2_photo",
               "notes as e2_notes",
               "reports_to as e2_reports_to",
+              "photo_path as e2_photo_path"
             ])
             .as("e2"),
           "e2.e2_id",
@@ -511,13 +522,13 @@ group("SELECT * FROM supplier", () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(suppliers).execute();
+    drizzle.select(suppliers).all();
   });
 
   const prep = drizzle.select(suppliers);
 
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -559,7 +570,7 @@ group("select * from supplier where id = ?", () => {
 
   bench("drizzle", () => {
     supplierIds.forEach((id) => {
-      drizzle.select(suppliers).where(eq(suppliers.id, id)).execute();
+      drizzle.select(suppliers).where(eq(suppliers.id, id)).get();
     });
   });
 
@@ -570,7 +581,7 @@ group("select * from supplier where id = ?", () => {
 
   bench("drizzle:p", () => {
     supplierIds.forEach((id) => {
-      prep.execute({ supplierId: id });
+      prep.get({ supplierId: id });
     });
   });
 
@@ -586,7 +597,7 @@ group("select * from supplier where id = ?", () => {
         .selectFrom("supplier")
         .selectAll()
         .where("supplier.id", "=", id)
-        .execute();
+        .execute()
     }
   });
 
@@ -626,12 +637,12 @@ group("SELECT * FROM product", () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(products).execute();
+    drizzle.select(products).all();
   });
 
   const prep = drizzle.select(products).prepare();
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -688,7 +699,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
         .select(products)
         .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
         .where(eq(products.id, id))
-        .execute();
+        .all();
     });
   });
 
@@ -700,7 +711,7 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
 
   bench("drizzle:p", () => {
     productIds.forEach((id) => {
-      prep.execute({ productId: id });
+      prep.all({ productId: id });
     });
   });
 
@@ -810,7 +821,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
       drizzle
         .select(products)
         .where(like(products.name, `'%${it}%'`))
-        .execute();
+        .all();
     });
   });
 
@@ -821,7 +832,7 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
 
   bench("drizzle:p", () => {
     productSearches.forEach((it) => {
-      prepare.execute({ name: `%${it}%` });
+      prepare.all({ name: `%${it}%` });
     });
   });
 
@@ -882,8 +893,7 @@ group("select all order with sum and count", () => {
         SUM(od.quantity) AS quantity_sum,
         SUM(od.quantity * unit_price) AS total_price
         FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-        GROUP BY o.id
-        ORDER BY o.id ASC`
+        GROUP BY o.id`
       )
       .all();
   });
@@ -894,8 +904,7 @@ group("select all order with sum and count", () => {
       SUM(od.quantity) AS quantity_sum,
       SUM(od.quantity * unit_price) AS total_price
       FROM "order" AS o LEFT JOIN "order_detail" AS od ON od.order_id = o.id
-      GROUP BY o.id
-      ORDER BY o.id ASC`
+      GROUP BY o.id`
   );
   bench("b3:p", () => {
     prep.all();
@@ -917,8 +926,7 @@ group("select all order with sum and count", () => {
       })
       .leftJoin(details, eq(orders.id, details.orderId))
       .groupBy(orders.id)
-      .orderBy(asc(orders.id))
-      .execute();
+      .all();
   });
 
   const prepare = drizzle
@@ -936,11 +944,10 @@ group("select all order with sum and count", () => {
     })
     .leftJoin(details, eq(orders.id, details.orderId))
     .groupBy(orders.id)
-    .orderBy(asc(orders.id))
     .prepare();
 
   bench("drizzle:p", () => {
-    prepare.execute();
+    prepare.all();
   });
 
   bench("knex", async () => {
@@ -956,8 +963,7 @@ group("select all order with sum and count", () => {
       .count("product_id as products_count")
       .sum("quantity as quantity_sum")
       .sum({ total_price: knex.raw("?? * ??", ["quantity", "unit_price"]) })
-      .groupBy("order.id")
-      .orderBy("order.id", "asc");
+      .groupBy("order.id");
   });
 
   bench("kysely", async () => {
@@ -975,13 +981,35 @@ group("select all order with sum and count", () => {
       ])
       .leftJoin("order_detail", "order_detail.order_id", "order.id")
       .groupBy("order.id")
-      .orderBy("order.id", "asc")
       .execute();
   });
 
   // query fails with large amount of data
   // bench("mikro", async () => {
-
+  // const result = await db.find(
+  //   Order,
+  //   {},
+  //   { populate: ["details"] }
+  // )
+  // const orders = result.map((item) => {
+  //   const details = item.details.toArray()
+  //   return {
+  //     id: item.id,
+  //     shippedDate: item.shippedDate,
+  //     shipName: item.shipName,
+  //     shipCity: item.shipCity,
+  //     shipCountry: item.shipCountry,
+  //     productsCount: item.details.length,
+  //     quantitySum: details.reduce(
+  //       (sum, deteil) => (sum += +deteil.quantity),
+  //       0
+  //     ),
+  //     totalPrice: details.reduce(
+  //       (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+  //       0
+  //     ),
+  //   };
+  // });
   //   mikro.clear();
   // });
 
@@ -1010,17 +1038,6 @@ group("select all order with sum and count", () => {
         ),
       };
     });
-
-    // .createQueryBuilder("order")
-    // .leftJoin("order.details", "order_detail")
-    // .addSelect([
-    //   "COUNT(product_id) AS products_count",
-    //   "SUM(quantity) AS quantity_sum",
-    //   "SUM(quantity * unit_price) AS total_price",
-    // ])
-    // .addGroupBy("order.id")
-    // .orderBy("order.id")
-    // .getRawMany();
   });
 
   bench("prisma", async () => {
@@ -1083,7 +1100,7 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
         .leftJoin(details, eq(orders.id, details.orderId))
         .leftJoin(products, eq(details.productId, products.id))
         .where(eq(orders.id, id))
-        .execute();
+        .all();
     });
   });
 
@@ -1096,45 +1113,9 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
 
   bench("drizzle:p", () => {
     orderIds.forEach((id) => {
-      prep.execute({ orderId: id });
+      prep.all({ orderId: id });
     });
   });
-
-  const prep2 =  drizzle.select(details)
-  .leftJoin(orders, eq(details.orderId, orders.id))
-  .leftJoin(products, eq(details.productId, products.id))
-  .where(eq(details.orderId, placeholder("orderId")))
-
-
-  // bench("drizzle:p2", () => {
-  //   orderIds.forEach((id) => {
-  //     prep2.execute({ orderId: id });
-  //   });
-  // });
-
-
-  // bench("drizzle2", () => {
-  //   orderIds.forEach((id) => {
-  //     drizzle.select(details)
-  //       .leftJoin(orders, eq(details.orderId, orders.id))
-  //       .leftJoin(products, eq(details.productId, products.id))
-  //       .where(eq(details.orderId, id))
-  //       .execute();
-  //   });
-  // })
-
-  // // const prep2 = drizzle
-  // //   .select(orders)
-  // //   .leftJoin(details, eq(orders.id, details.orderId))
-  // //   .leftJoin(products, eq(details.productId, products.id))
-  // //   .where(eq(orders.id, placeholder("orderId")))
-  // //   .prepare();
-
-  // // bench("drizzle:p2", () => {
-  // //   orderIds.forEach((id) => {
-  // //     prep2.execute({ orderId: id });
-  // //   });
-  // // });
 
   bench("knex", async () => {
     for (const id of orderIds) {
@@ -1224,13 +1205,6 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
     mikro.clear();
   });
 
-  bench("mikro:2", async () => {
-    for (const id of orderIds) {
-      await mikro.find(Detail, { orderId: id }, { populate: ["order", "product"] });
-    }
-  });
-  
-
   bench("typeorm", async () => {
     for (const id of orderIds) {
       await typeorm.getRepository(Order).find({
@@ -1272,48 +1246,9 @@ const test = async () => {
   await getMikroOrmConnect();
   await typeorm.initialize();
 
-  // const drz = drizzle
-  //   .select(customers)
-  //   .where(sql`${customers.companyName} like ${placeholder("name")}`)
-  //   .prepare();
-
-  // console.log(
-  //   typeorm
-  //     .getRepository(Customer)
-  //     .createQueryBuilder()
-  //     .where("company_name like :company")
-  //     .getSql()
-  // );
-  // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
-  // console.log(await typeorm.getRepository(Employee).findOne({
-  //   where: {
-  //     id: 1,
-  //   },
-  //   relations: ["recipient"],
-  // }));
-  // const it = 'ha'
-  // console.log('first', await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]))
-  // console.log('second', await knex("customer").where("company_name", 'like', `%${it}%`))
-
-  for (const id of [customerIds[0]]) {
-    // console.log(await mikro.findOne(m_Customer, { id }));
-    // console.log(
-    //   drizzle.select(customers).where(eq(customers.id, id)).execute()
-    // );
-    // drizzle
-    //   .update(customers)
-    //   .set({ fax: "faks2" })
-    //   .where(eq(customers.id, id))
-    //   .execute();
-    // console.log(JSON.stringify(await mikro.findOne(m_Customer, { id })));
-    // console.log(
-    //   drizzle.select(customers).where(eq(customers.id, id)).execute()
-    // );
-  }
   process.exit(1);
 };
 
 main();
 // test();
 
-// console.log(orderIds);

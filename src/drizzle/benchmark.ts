@@ -1,5 +1,5 @@
 import { run, bench } from "mitata";
-import { asc, eq, like } from "drizzle-orm/expressions";
+import { eq, like } from "drizzle-orm/expressions";
 import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
 
 import { sql } from "drizzle-orm";
@@ -17,25 +17,24 @@ import { customerIds, employeeIds, orderIds, productIds, customerSearches, produ
 const db = new SQLiteConnector(new Database("nw.sqlite")).connect();
 
 bench("Drizzle-ORM Customers: getAll", () => {
-  db.select(customers).execute();
+  db.select(customers).all();
 });
 
 bench("Drizzle-ORM Customers: getInfo", () => {
   customerIds.forEach((id) => {
-    db.select(customers).where(eq(customers.id, id)).execute();
+    db.select(customers).where(eq(customers.id, id)).get();
   });
 });
 
 bench("Drizzle-ORM Customers: search", () => {
   customerSearches.forEach((it) => {
     db.select(customers)
-      .where(sql`lower(${customers.companyName}) like "%${it}%"`)
-      .execute();
+      .where(like(customers.companyName, `'%${it}%'`))
+      .all();
   });
 });
-
 bench("Drizzle-ORM Employees: getAll", () => {
-  db.select(employees).execute();
+  db.select(employees).all();
 });
 
 bench("Drizzle-ORM Employees: getInfo", () => {
@@ -45,22 +44,22 @@ bench("Drizzle-ORM Employees: getInfo", () => {
     db.select(employees)
       .leftJoin(e2, eq(e2.id, employees.reportsTo))
       .where(eq(employees.id, id))
-      .execute();
+      .all();
   });
 });
 
 bench("Drizzle-ORM Suppliers: getAll", () => {
-  db.select(suppliers).execute();
+  db.select(suppliers).all();
 });
 
 bench("Drizzle-ORM Suppliers: getInfo", () => {
   supplierIds.forEach((id) => {
-    db.select(suppliers).where(eq(suppliers.id, id)).execute();
+    db.select(suppliers).where(eq(suppliers.id, id)).get();
   });
 });
 
 bench("Drizzle-ORM Products: getAll", () => {
-  db.select(products).execute();
+  db.select(products).all();
 });
 
 bench("Drizzle-ORM Products: getInfo", () => {
@@ -68,15 +67,15 @@ bench("Drizzle-ORM Products: getInfo", () => {
     db.select(products)
       .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
       .where(eq(products.id, id))
-      .execute();
+      .all();
   });
 });
 
 bench("Drizzle-ORM Products: search", () => {
   productSearches.forEach((it) => {
     db.select(products)
-      .where(sql`lower(${products.name}) like "%${it}%"`)
-      .execute();
+      .where(like(products.name, `'%${it}%'`))
+      .all();
   });
 });
 
@@ -94,8 +93,7 @@ bench("Drizzle-ORM Orders: getAll", () => {
     })
     .leftJoin(details, eq(orders.id, details.orderId))
     .groupBy(orders.id)
-    .orderBy(asc(orders.id))
-    .execute();
+    .all();
 });
 
 bench("Drizzle-ORM Orders: getInfo", () => {
@@ -104,7 +102,7 @@ bench("Drizzle-ORM Orders: getInfo", () => {
       .leftJoin(orders, eq(details.orderId, orders.id))
       .leftJoin(products, eq(details.productId, products.id))
       .where(eq(details.orderId, id))
-      .execute();
+      .all();
   });
 });
 

@@ -1,6 +1,6 @@
-import { MikroORM, QueryOrder } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
-import { SqliteDriver } from "@mikro-orm/sqlite";
+import { SqlEntityManager, SqliteDriver } from "@mikro-orm/sqlite";
 import { run, bench } from "mitata";
 import {
   customerIds,
@@ -19,7 +19,7 @@ import { Product } from "./entities/products";
 import { Supplier } from "./entities/suppliers";
 import { details } from "@/drizzle/schema";
 
-let db;
+let db: SqlEntityManager<SqliteDriver>;
 
 const getConnect = async () => {
   const orm = await MikroORM.init<SqliteDriver>({
@@ -79,22 +79,30 @@ bench("MikroORM Products: search", async () => {
 });
 
 bench("MikroORM Orders: getAll", async () => {
-  await db
-    .createQueryBuilder(Order, "o")
-    .select([
-      "id",
-      "shipped_date",
-      "ship_name",
-      "ship_city",
-      "ship_country",
-      "COUNT(product_id) AS products_count",
-      "SUM(quantity) AS quantity_sum",
-      "SUM(quantity * unit_price) AS total_price",
-    ])
-    .leftJoin("o.details", "od")
-    .groupBy("o.id")
-    .orderBy({ id: QueryOrder.ASC })
-    .execute();
+  // const result = await db.find(
+  //   Order,
+  //   {},
+  //   { populate: ["details"] }
+  // )
+  // const orders = result.map((item) => {
+  //   const details = item.details.toArray()
+  //   return {
+  //     id: item.id,
+  //     shippedDate: item.shippedDate,
+  //     shipName: item.shipName,
+  //     shipCity: item.shipCity,
+  //     shipCountry: item.shipCountry,
+  //     productsCount: item.details.length,
+  //     quantitySum: details.reduce(
+  //       (sum, deteil) => (sum += +deteil.quantity),
+  //       0
+  //     ),
+  //     totalPrice: details.reduce(
+  //       (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+  //       0
+  //     ),
+  //   };
+  // });
 });
 bench("MikroORM Orders: getInfo", async () => {
   for (const id of orderIds) {
@@ -103,23 +111,14 @@ bench("MikroORM Orders: getInfo", async () => {
 });
 
 const main = async () => {
-  // await getConnect()
 
-  const orm = await MikroORM.init<SqliteDriver>({
-    type: "sqlite",
-    dbName: "nw.sqlite",
-    entities: [Customer, Employee, Order, Supplier, Product, Detail],
-    metadataProvider: TsMorphMetadataProvider,
-  });
-  const db = orm.em.fork();
-  const repo = db.getRepository(Order);
-  console.log(await repo.find({}, { populate: ["details"] }));
-
-  console.log(
-    JSON.stringify(await db.find(Order, {}, { populate: ["details"] }))
-  );
-  // console.log( await db.find(Detail, {}, { populate: ["order", "product"] }));
-
+  
+  await getConnect()
+  console.log(await db.find(
+    Order,
+    {},
+    { populate: ["details"] }
+  ));
   // await run();
 };
 main();

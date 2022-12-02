@@ -22,12 +22,15 @@ interface Employee {
     hire_date: Date;
     address: string;
     city: string;
+    region: string;
     postal_code: string;
     country: string;
     home_phone: string;
+    photo: string;
     extension: number;
     notes: string;
     reports_to: number | null;
+    photo_path: string
 }
 
 interface Order {

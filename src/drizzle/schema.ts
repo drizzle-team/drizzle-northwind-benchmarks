@@ -28,12 +28,14 @@ export const employees = sqliteTable("employee", {
   hireDate: integer("hire_date", { mode: "timestamp" }).notNull(),
   address: text("address").notNull(),
   city: text("city").notNull(),
+  region: text("region"),
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
   homePhone: text("home_phone").notNull(),
   extension: integer("extension").notNull(),
   notes: text("notes").notNull(),
   reportsTo: integer("reports_to"),
+  photo: text("photo"),
   photoPath: text("photo_path"),
 }, (table) => ({
   reportsToFk: foreignKey(() => ({
@@ -77,12 +79,15 @@ export const suppliers = sqliteTable("supplier", {
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
   phone: text("phone").notNull(),
+  fax: text("fax").notNull(),
+  homePage: text("home_page").notNull(),
 });
 
 export type Supplier = InferModel<typeof suppliers>;
 
 export const products = sqliteTable("product", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  categoryId: integer("category_id"),
   name: text("name").notNull(),
   quantityPerUnit: text("quantity_per_unit").notNull(),
   unitPrice: numeric("unit_price").notNull(),
