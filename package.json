@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare:prisma": "npx prisma generate --schema src/prisma/schema.prisma"
+    "prepare:prisma": "npx prisma generate --schema src/prisma/schema.prisma",
+    "start": "pnpm prepare:prisma && tsx src/common/benchmark.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,20 +22,19 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "tsx": "^3.12.0",
-    "typescript": "^4.8.4"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "@mikro-orm/core": "^5.5.3",
     "@mikro-orm/reflection": "^5.5.3",
     "@mikro-orm/sqlite": "^5.5.3",
-    "@prisma/client": "^4.6.1",
-    "better-sqlite3": "^7.6.2",
-    "drizzle-orm": "^0.12.0-beta.16",
-    "drizzle-orm-sqlite": "^0.12.0-beta.12",
+    "@prisma/client": "^4.13.0",
+    "better-sqlite3": "^8.3.0",
+    "drizzle-orm": "^0.24.4",
     "knex": "^2.3.0",
-    "kysely": "^0.22.0",
+    "kysely": "^0.24.2",
     "mitata": "^0.1.6",
-    "prisma": "^4.6.1",
+    "prisma": "^4.13.0",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.2",
     "typeorm": "^0.3.10"

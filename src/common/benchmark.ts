@@ -1,13 +1,14 @@
 import { bench, group, run } from "mitata";
 import Database from "better-sqlite3";
 import { asc, eq, ilike, like } from "drizzle-orm/expressions";
-import { alias, SQLiteConnector } from "drizzle-orm-sqlite";
-import { Database as DatabaseInit } from "../kysely/db";
+import { alias } from "drizzle-orm/sqlite-core";
+import { BetterSQLite3Database, drizzle as drizzleDb } from "drizzle-orm/better-sqlite3/driver";
 import { sql } from "drizzle-orm";
 import { placeholder } from "drizzle-orm/sql";
+import { Database as DatabaseInit } from "../kysely/db";
 import knx from "knex";
 import { DataSource, Db, Like } from "typeorm";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client'
 import {
   employees,
   customers,
@@ -43,7 +44,7 @@ import { Product as m_Product } from "@/mikro/entities/products";
 import { Supplier as m_Supplier } from "@/mikro/entities/suppliers";
 
 const instance = new Database("nw.sqlite");
-const drizzle = new SQLiteConnector(new Database("nw.sqlite")).connect();
+const drizzle = drizzleDb(new Database("nw.sqlite"));
 
 const knex = knx({
   client: "better-sqlite3",
@@ -60,7 +61,7 @@ const typeorm = new DataSource({
   entities: [Customer, Employee, Supplier, Order, Product, Detail],
 });
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 const kysely = new Kysely<DatabaseInit>({
   dialect: new SqliteDialect({
@@ -99,12 +100,12 @@ group("select * from customer", () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(customers).execute();
+    drizzle.select().from(customers).all();
   });
 
-  const prep = drizzle.select(customers).prepare();
+  const prep = drizzle.select().from(customers).prepare();
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -147,18 +148,19 @@ group("select * from customer where id = ?", () => {
 
   bench("drizzle", () => {
     customerIds.forEach((id) => {
-      drizzle.select(customers).where(eq(customers.id, id)).execute();
+      drizzle.select().from(customers).where(eq(customers.id, id)).all();
     });
   });
 
   const prepared = drizzle
-    .select(customers)
+    .select()
+    .from(customers)
     .where(eq(customers.id, placeholder("userId")))
     .prepare();
 
   bench("drizzle:p", () => {
     customerIds.forEach((id) => {
-      prepared.execute({ userId: id });
+      prepared.all({ userId: id });
     });
   });
 
@@ -220,13 +222,14 @@ group("select * from customer where company_name like ?", () => {
   });
 
   const drz = drizzle
-    .select(customers)
+    .select()
+    .from(customers)
     .where(sql`${customers.companyName} like ${placeholder("name")}`)
     .prepare();
 
   bench("drizzle:p", () => {
     customerSearches.forEach((it) => {
-      drz.execute({ name: `%${it}%` });
+      drz.all({ name: `%${it}%` });
     });
   });
 
@@ -291,12 +294,12 @@ group('"SELECT * FROM employee"', () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(employees).execute();
+    drizzle.select().from(employees).all();
   });
 
-  const prep = drizzle.select(employees);
+  const prep = drizzle.select().from(employees);
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -385,23 +388,25 @@ group("select * from employee where id = ? left join reportee", () => {
 
     employeeIds.forEach((id) => {
       drizzle
-        .select(employees)
+        .select()
+        .from(employees)
         .leftJoin(e2, eq(e2.id, employees.reportsTo))
         .where(eq(employees.id, id))
-        .execute();
+        .all();
     });
   });
 
   const e2 = alias(employees, "recipient");
   const prep = drizzle
-    .select(employees)
+    .select()
+    .from(employees)
     .leftJoin(e2, eq(e2.id, employees.reportsTo))
     .where(eq(employees.id, placeholder("employeeId")))
     .prepare();
 
   bench("drizzle:p", () => {
     employeeIds.forEach((id) => {
-      prep.execute({ employeeId: id });
+      prep.all({ employeeId: id });
     });
   });
 
@@ -511,13 +516,13 @@ group("SELECT * FROM supplier", () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(suppliers).execute();
+    drizzle.select().from(suppliers).all();
   });
 
-  const prep = drizzle.select(suppliers);
+  const prep = drizzle.select().from(suppliers);
 
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -559,18 +564,19 @@ group("select * from supplier where id = ?", () => {
 
   bench("drizzle", () => {
     supplierIds.forEach((id) => {
-      drizzle.select(suppliers).where(eq(suppliers.id, id)).execute();
+      drizzle.select().from(suppliers).where(eq(suppliers.id, id)).all();
     });
   });
 
   const prep = drizzle
-    .select(suppliers)
+    .select()
+    .from(suppliers)
     .where(eq(suppliers.id, placeholder("supplierId")))
     .prepare();
 
   bench("drizzle:p", () => {
     supplierIds.forEach((id) => {
-      prep.execute({ supplierId: id });
+      prep.all({ supplierId: id });
     });
   });
 
@@ -626,12 +632,12 @@ group("SELECT * FROM product", () => {
   });
 
   bench("drizzle", () => {
-    drizzle.select(products).execute();
+    drizzle.select().from(products).all();
   });
 
-  const prep = drizzle.select(products).prepare();
+  const prep = drizzle.select().from(products).prepare();
   bench("drizzle:p", () => {
-    prep.execute();
+    prep.all();
   });
 
   bench("knex", async () => {
@@ -685,22 +691,24 @@ group("SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?", () => {
   bench("drizzle", () => {
     productIds.forEach((id) => {
       drizzle
-        .select(products)
+        .select()
+        .from(products)
         .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
         .where(eq(products.id, id))
-        .execute();
+        .all();
     });
   });
 
   const prep = drizzle
-    .select(products)
+    .select()
+    .from(products)
     .leftJoin(suppliers, eq(products.supplierId, suppliers.id))
     .where(eq(products.id, placeholder("productId")))
     .prepare();
 
   bench("drizzle:p", () => {
     productIds.forEach((id) => {
-      prep.execute({ productId: id });
+      prep.all({ productId: id });
     });
   });
 
@@ -808,20 +816,22 @@ group("SELECT * FROM product WHERE product.name LIKE ?", () => {
   bench("drizzle", () => {
     productSearches.forEach((it) => {
       drizzle
-        .select(products)
+        .select()
+        .from(products)
         .where(like(products.name, `'%${it}%'`))
-        .execute();
+        .all();
     });
   });
 
   const prepare = drizzle
-    .select(products)
+    .select()
+    .from(products)
     .where(sql`${products.name} like ${placeholder("name")}`)
     .prepare();
 
   bench("drizzle:p", () => {
     productSearches.forEach((it) => {
-      prepare.execute({ name: `%${it}%` });
+      prepare.all({ name: `%${it}%` });
     });
   });
 
@@ -903,8 +913,7 @@ group("select all order with sum and count", () => {
 
   bench("drizzle", () => {
     drizzle
-      .select(orders)
-      .fields({
+      .select({
         id: orders.id,
         shippedDate: orders.shippedDate,
         shipName: orders.shipName,
@@ -915,15 +924,15 @@ group("select all order with sum and count", () => {
         totalPrice:
           sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
       })
+      .from(orders)
       .leftJoin(details, eq(orders.id, details.orderId))
       .groupBy(orders.id)
       .orderBy(asc(orders.id))
-      .execute();
+      .all();
   });
 
   const prepare = drizzle
-    .select(orders)
-    .fields({
+    .select({
       id: orders.id,
       shippedDate: orders.shippedDate,
       shipName: orders.shipName,
@@ -934,13 +943,14 @@ group("select all order with sum and count", () => {
       totalPrice:
         sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
     })
+    .from(orders)
     .leftJoin(details, eq(orders.id, details.orderId))
     .groupBy(orders.id)
     .orderBy(asc(orders.id))
     .prepare();
 
   bench("drizzle:p", () => {
-    prepare.execute();
+    prepare.all();
   });
 
   bench("knex", async () => {
@@ -980,10 +990,10 @@ group("select all order with sum and count", () => {
   });
 
   // query fails with large amount of data
-  // bench("mikro", async () => {
+  bench("mikro", async () => {
 
-  //   mikro.clear();
-  // });
+    mikro.clear();
+  });
 
   bench("typeorm", async () => {
     // ??
@@ -1079,16 +1089,18 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("drizzle", () => {
     orderIds.forEach((id) => {
       drizzle
-        .select(orders)
+        .select()
+        .from(orders)
         .leftJoin(details, eq(orders.id, details.orderId))
         .leftJoin(products, eq(details.productId, products.id))
         .where(eq(orders.id, id))
-        .execute();
+        .all();
     });
   });
 
   const prep = drizzle
-    .select(orders)
+    .select()
+    .from(orders)
     .leftJoin(details, eq(orders.id, details.orderId))
     .leftJoin(products, eq(details.productId, products.id))
     .where(eq(orders.id, placeholder("orderId")))
@@ -1096,11 +1108,11 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
 
   bench("drizzle:p", () => {
     orderIds.forEach((id) => {
-      prep.execute({ orderId: id });
+      prep.all({ orderId: id });
     });
   });
 
-  const prep2 =  drizzle.select(details)
+  const prep2 =  drizzle.select().from(details)
   .leftJoin(orders, eq(details.orderId, orders.id))
   .leftJoin(products, eq(details.productId, products.id))
   .where(eq(details.orderId, placeholder("orderId")))
