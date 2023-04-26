@@ -48,7 +48,6 @@ const drizzle = drizzleDb(new Database("nw.sqlite"));
 
 const knex = knx({
   client: "better-sqlite3",
-  // client: "sqlite3",
   connection: {
     filename: "nw.sqlite",
   },
@@ -1011,26 +1010,15 @@ group("select all order with sum and count", () => {
         shipCountry: item.shipCountry,
         productsCount: item.details.length,
         quantitySum: item.details.reduce(
-          (sum, deteil) => (sum += +deteil.quantity),
+          (sum, detail) => (sum += +detail.quantity),
           0
         ),
         totalPrice: item.details.reduce(
-          (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+          (sum, detail) => (sum += +detail.quantity * +detail.unitPrice),
           0
         ),
       };
     });
-
-    // .createQueryBuilder("order")
-    // .leftJoin("order.details", "order_detail")
-    // .addSelect([
-    //   "COUNT(product_id) AS products_count",
-    //   "SUM(quantity) AS quantity_sum",
-    //   "SUM(quantity * unit_price) AS total_price",
-    // ])
-    // .addGroupBy("order.id")
-    // .orderBy("order.id")
-    // .getRawMany();
   });
 
   bench("prisma", async () => {
@@ -1048,11 +1036,11 @@ group("select all order with sum and count", () => {
         shipCountry: item.shipCountry,
         productsCount: item.details.length,
         quantitySum: item.details.reduce(
-          (sum, deteil) => (sum += +deteil.quantity),
+          (sum, detail) => (sum += +detail.quantity),
           0
         ),
         totalPrice: item.details.reduce(
-          (sum, deteil) => (sum += +deteil.quantity * +deteil.unitPrice),
+          (sum, detail) => (sum += +detail.quantity * +detail.unitPrice),
           0
         ),
       };
@@ -1060,7 +1048,6 @@ group("select all order with sum and count", () => {
   });
 });
 
-// checked
 group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   bench("b3", () => {
     orderIds.forEach((it) => {
@@ -1116,37 +1103,6 @@ group("SELECT * FROM order_detail WHERE order_id = ?", () => {
   .leftJoin(orders, eq(details.orderId, orders.id))
   .leftJoin(products, eq(details.productId, products.id))
   .where(eq(details.orderId, placeholder("orderId")))
-
-
-  // bench("drizzle:p2", () => {
-  //   orderIds.forEach((id) => {
-  //     prep2.execute({ orderId: id });
-  //   });
-  // });
-
-
-  // bench("drizzle2", () => {
-  //   orderIds.forEach((id) => {
-  //     drizzle.select(details)
-  //       .leftJoin(orders, eq(details.orderId, orders.id))
-  //       .leftJoin(products, eq(details.productId, products.id))
-  //       .where(eq(details.orderId, id))
-  //       .execute();
-  //   });
-  // })
-
-  // // const prep2 = drizzle
-  // //   .select(orders)
-  // //   .leftJoin(details, eq(orders.id, details.orderId))
-  // //   .leftJoin(products, eq(details.productId, products.id))
-  // //   .where(eq(orders.id, placeholder("orderId")))
-  // //   .prepare();
-
-  // // bench("drizzle:p2", () => {
-  // //   orderIds.forEach((id) => {
-  // //     prep2.execute({ orderId: id });
-  // //   });
-  // // });
 
   bench("knex", async () => {
     for (const id of orderIds) {
@@ -1280,52 +1236,4 @@ const main = async () => {
   process.exit(1);
 };
 
-const test = async () => {
-  await getMikroOrmConnect();
-  await typeorm.initialize();
-
-  // const drz = drizzle
-  //   .select(customers)
-  //   .where(sql`${customers.companyName} like ${placeholder("name")}`)
-  //   .prepare();
-
-  // console.log(
-  //   typeorm
-  //     .getRepository(Customer)
-  //     .createQueryBuilder()
-  //     .where("company_name like :company")
-  //     .getSql()
-  // );
-  // console.log(db("customer").whereRaw("company_name LIKE %ha%"))
-  // console.log(await typeorm.getRepository(Employee).findOne({
-  //   where: {
-  //     id: 1,
-  //   },
-  //   relations: ["recipient"],
-  // }));
-  // const it = 'ha'
-  // console.log('first', await knex("customer").whereRaw("company_name LIKE ?", [`%${it}%`]))
-  // console.log('second', await knex("customer").where("company_name", 'like', `%${it}%`))
-
-  for (const id of [customerIds[0]]) {
-    // console.log(await mikro.findOne(m_Customer, { id }));
-    // console.log(
-    //   drizzle.select(customers).where(eq(customers.id, id)).execute()
-    // );
-    // drizzle
-    //   .update(customers)
-    //   .set({ fax: "faks2" })
-    //   .where(eq(customers.id, id))
-    //   .execute();
-    // console.log(JSON.stringify(await mikro.findOne(m_Customer, { id })));
-    // console.log(
-    //   drizzle.select(customers).where(eq(customers.id, id)).execute()
-    // );
-  }
-  process.exit(1);
-};
-
 main();
-// test();
-
-// console.log(orderIds);
