@@ -5,6 +5,7 @@ Current repository is opened for any suggestions and modifications. Please creat
 We tried to get best queries from each library, but may have missed something. If you know how to improve any of queries we have - we are open to modify them
 
 You can also add any other ORM you'd like to see here
+
 You can also add any query you wan to benchmark
 
 ---
