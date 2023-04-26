@@ -29,7 +29,7 @@ Current database has:
 
 2. Current repository has separate folders for each library to run benchmarks
 
-3. Main folder, where all benchmarks were run against are in `common` folder. It has a set of groups divided by query, that should be executed to get info from database
+3. Main folder where all benchmarks were run against are in `common` folder. It has a set of groups divided by query that should be executed to get info from database
 
 ## How to run benchmarks
 
