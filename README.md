@@ -43,51 +43,51 @@ After that you'll get terminal output with results. You can check sample output 
 
 ---
 
-### Get all customers from database
+### Get all customers from database (μs per 1 iteration)
 
 ![](media/first.png)
 
-### Get a customer by specific ID
+### Get a customer by specific ID (ms per 1 iteration)
 
 ![](media/second.png)
 
-### Get all customers searching by company name
+### Get all customers searching by company name (ms per 1 iteration)
 
 ![](media/three.png)
 
-### Get all employees
+### Get all employees (μs per 1 iteration)
 
 ![](media/four.png)
 
-### Get employees by ID together with reportees
+### Get employees by ID together with reportees (ms per 1 iteration)
 
 ![](media/five.png)
 
-### Get all suppliers
+### Get all suppliers (μs per 1 iteration)
 
 ![](media/six.png)
 
-### Get a supplier by specific ID
+### Get a supplier by specific ID (ms per 1 iteration)
 
 ![](media/seven.png)
 
-### Get all products
+### Get all products (μs per 1 iteration)
 
 ![](media/eight.png)
 
-### Get a product by ID together with all suppliers
+### Get a product by ID together with all suppliers (ms per 1 iteration)
 
 ![](media/nine.png)
 
-### Search for a product by name regex
+### Search for a product by name regex (ms per 1 iteration)
 
 ![](media/ten.png)
 
-### Get all orders with amount of products in it and total price for each order
+### Get all orders with amount of products in it and total price for each order (ms per 1 iteration)
 
 ![](media/eleven.png)
 
-### Get all order details by specific order
+### Get all order details by specific order (ms per 1 iteration)
 
 ![](media/twelve.png)
 
