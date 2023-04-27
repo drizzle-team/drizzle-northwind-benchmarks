@@ -5,6 +5,16 @@
 `drizzle:p` - drizzle orm using prepared statements
 
 ```
+Machine specs:
+
+ram: 16gb
+cpu: Apple M1
+runtime: node v18.13.0 (x64-darwin)
+```
+
+---
+
+```
 benchmark      time (avg)             (min … max)       p75       p99      p995
 ------------------------------------------------- -----------------------------
 • select * from customer
