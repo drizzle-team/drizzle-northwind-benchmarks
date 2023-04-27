@@ -41,8 +41,6 @@ After that you'll get terminal output with results. You can check sample output 
 
 ## Benchmarks
 
----
-
 ```
 Machine specs:
 
