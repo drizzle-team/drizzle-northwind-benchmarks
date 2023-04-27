@@ -61,12 +61,6 @@ After that you'll get terminal output with results. You can check sample output 
 
 ![](media/three.png)
 
-### Get all employees
-
-#### Average queries per second
-
-![](media/four.png)
-
 ### Get employees by ID together with reportees
 
 #### Average queries per second
