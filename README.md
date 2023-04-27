@@ -43,6 +43,14 @@ After that you'll get terminal output with results. You can check sample output 
 
 ---
 
+```
+Machine specs:
+
+ram: 16gb
+cpu: Apple M1
+runtime: node v18.13.0 (x64-darwin)
+```
+
 ### Get all customers from database
 
 #### Average queries per second
