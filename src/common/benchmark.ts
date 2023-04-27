@@ -147,7 +147,7 @@ group("select * from customer where id = ?", () => {
 
   bench("drizzle", () => {
     customerIds.forEach((id) => {
-      drizzle.select().from(customers).where(eq(customers.id, id)).all();
+      drizzle.select().from(customers).where(eq(customers.id, id)).get();
     });
   });
 
@@ -159,13 +159,13 @@ group("select * from customer where id = ?", () => {
 
   bench("drizzle:p", () => {
     customerIds.forEach((id) => {
-      prepared.all({ userId: id });
+      prepared.get({ userId: id });
     });
   });
 
   bench("knex", async () => {
     for (const id of customerIds) {
-      await knex("customer").where({ id });
+      await knex("customer").where({ id }).first();
     }
   });
 
@@ -175,7 +175,7 @@ group("select * from customer where id = ?", () => {
         .selectFrom("customer")
         .selectAll()
         .where("customer.id", "=", id)
-        .execute();
+        .executeTakeFirst();
     }
   });
 
@@ -296,7 +296,7 @@ group('"SELECT * FROM employee"', () => {
     drizzle.select().from(employees).all();
   });
 
-  const prep = drizzle.select().from(employees);
+  const prep = drizzle.select().from(employees).prepare();
   bench("drizzle:p", () => {
     prep.all();
   });
@@ -563,7 +563,7 @@ group("select * from supplier where id = ?", () => {
 
   bench("drizzle", () => {
     supplierIds.forEach((id) => {
-      drizzle.select().from(suppliers).where(eq(suppliers.id, id)).all();
+      drizzle.select().from(suppliers).where(eq(suppliers.id, id)).get();
     });
   });
 
@@ -575,7 +575,7 @@ group("select * from supplier where id = ?", () => {
 
   bench("drizzle:p", () => {
     supplierIds.forEach((id) => {
-      prep.all({ supplierId: id });
+      prep.get({ supplierId: id });
     });
   });
 
@@ -918,10 +918,10 @@ group("select all order with sum and count", () => {
         shipName: orders.shipName,
         shipCity: orders.shipCity,
         shipCountry: orders.shipCountry,
-        productsCount: sql`count(${details.productId})`.as<number>(),
-        quantitySum: sql`sum(${details.quantity})`.as<number>(),
+        productsCount: sql<number>`count(${details.productId})`,
+        quantitySum: sql<number>`sum(${details.quantity})`,
         totalPrice:
-          sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+          sql<number>`sum(${details.quantity} * ${details.unitPrice})`,
       })
       .from(orders)
       .leftJoin(details, eq(orders.id, details.orderId))
@@ -937,10 +937,10 @@ group("select all order with sum and count", () => {
       shipName: orders.shipName,
       shipCity: orders.shipCity,
       shipCountry: orders.shipCountry,
-      productsCount: sql`count(${details.productId})`.as<number>(),
-      quantitySum: sql`sum(${details.quantity})`.as<number>(),
+      productsCount: sql<number>`count(${details.productId})`,
+      quantitySum: sql<number>`sum(${details.quantity})`,
       totalPrice:
-        sql`sum(${details.quantity} * ${details.unitPrice})`.as<number>(),
+        sql<number>`sum(${details.quantity} * ${details.unitPrice})`,
     })
     .from(orders)
     .leftJoin(details, eq(orders.id, details.orderId))
@@ -989,10 +989,9 @@ group("select all order with sum and count", () => {
   });
 
   // query fails with large amount of data
-  bench("mikro", async () => {
-
-    mikro.clear();
-  });
+  // bench("mikro", async () => {
+  //   mikro.clear();
+  // });
 
   bench("typeorm", async () => {
     // ??
