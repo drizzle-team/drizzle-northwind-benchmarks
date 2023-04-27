@@ -41,12 +41,12 @@ After that you'll get terminal output with results. You can check sample output 
 
 ## Benchmarks
 
-```
-Machine specs:
+Machine specs
 
-ram: 16gb
-cpu: Apple M1
-runtime: node v18.13.0 (x64-darwin)
+```plain
+RAM: 32GB
+CPU: AMD Ryzen 9 7900X 12-Core Processor
+Runtime: node v16.14.2 (x64-linux)
 ```
 
 ### Get all customers from database
@@ -66,6 +66,12 @@ runtime: node v18.13.0 (x64-darwin)
 #### Average queries per second
 
 ![](media/three.png)
+
+### Get all employee
+
+#### Average queries per second
+
+![](media/four.png)
 
 ### Get employees by ID together with reportees
 
