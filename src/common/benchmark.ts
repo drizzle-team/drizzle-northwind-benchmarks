@@ -989,10 +989,10 @@ group("select all order with sum and count", () => {
   });
 
   // query fails with large amount of data
-  bench("mikro", async () => {
+  // bench("mikro", async () => {
 
-    mikro.clear();
-  });
+  //   mikro.clear();
+  // });
 
   bench("typeorm", async () => {
     // ??
