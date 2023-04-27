@@ -39,55 +39,78 @@ pnpm i && pnpm run start
 
 After that you'll get terminal output with results. You can check sample output [here](./output.md)
 
-## Benchmarks 
+## Benchmarks
 
 ---
 
-### Get all customers from database (μs per 1 iteration)
+### Get all customers from database
+
+#### Average queries per second
 
 ![](media/first.png)
 
-### Get a customer by specific ID (ms per 1 iteration)
+### Get a customer by specific ID
+
+#### Average queries per second
 
 ![](media/second.png)
 
-### Get all customers searching by company name (ms per 1 iteration)
+### Get all customers searching by company name
+
+#### Average queries per second
 
 ![](media/three.png)
 
-### Get all employees (μs per 1 iteration)
+### Get all employees
+
+#### Average queries per second
 
 ![](media/four.png)
 
-### Get employees by ID together with reportees (ms per 1 iteration)
+### Get employees by ID together with reportees
+
+#### Average queries per second
 
 ![](media/five.png)
 
-### Get all suppliers (μs per 1 iteration)
+### Get all suppliers
+
+#### Average queries per second
 
 ![](media/six.png)
 
-### Get a supplier by specific ID (ms per 1 iteration)
+### Get a supplier by specific ID
+
+#### Average queries per second
 
 ![](media/seven.png)
 
-### Get all products (μs per 1 iteration)
+### Get all products
+
+#### Average queries per second
 
 ![](media/eight.png)
 
-### Get a product by ID together with all suppliers (ms per 1 iteration)
+### Get a product by ID together with all suppliers
+
+#### Average queries per second
 
 ![](media/nine.png)
 
-### Search for a product by name regex (ms per 1 iteration)
+### Search for a product by name regex
+
+#### Average queries per second
 
 ![](media/ten.png)
 
-### Get all orders with amount of products in it and total price for each order (ms per 1 iteration)
+### Get all orders with amount of products in it and total price for each order
+
+#### Average queries per second
 
 ![](media/eleven.png)
 
-### Get all order details by specific order (ms per 1 iteration)
+### Get all order details by specific order
+
+#### Average queries per second
 
 ![](media/twelve.png)
-
