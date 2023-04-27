@@ -1,291 +1,291 @@
 # Sample benchmarks output
 
-`b3:p` - better-sqlite driver using prepared statements
+`b3:p` - better-sqlite3 driver using prepared statements
 
 `drizzle:p` - drizzle orm using prepared statements
 
-```
-Machine specs:
+## Machine specs
 
-ram: 16gb
-cpu: Apple M1
-runtime: node v18.13.0 (x64-darwin)
+```plain
+RAM: 32GB
+CPU: AMD Ryzen 9 7900X 12-Core Processor
+Runtime: node v16.14.2 (x64-linux)
 ```
 
 ---
 
-```
+```plain
 benchmark      time (avg)             (min … max)       p75       p99      p995
 ------------------------------------------------- -----------------------------
 • select * from customer
 ------------------------------------------------- -----------------------------
-b3         281.72 µs/iter   (267.96 µs … 2.28 ms) 276.79 µs 362.79 µs 607.63 µs
-b3:p       258.49 µs/iter (251.54 µs … 781.29 µs)    259 µs 276.58 µs 288.33 µs
-drizzle    267.87 µs/iter   (234.25 µs … 2.68 ms) 246.96 µs   1.09 ms   1.19 ms
-drizzle:p  208.88 µs/iter (198.38 µs … 778.71 µs) 208.63 µs  249.5 µs 567.38 µs
-knex        342.5 µs/iter      (295.17 µs … 4 ms) 315.96 µs   1.44 ms   2.43 ms
-kysely     317.43 µs/iter   (281.71 µs … 1.66 ms) 309.75 µs   1.11 ms   1.51 ms
-mikro        2.11 ms/iter    (1.32 ms … 11.46 ms)   1.95 ms    9.3 ms   9.75 ms
-typeorm      1.27 ms/iter     (1.03 ms … 5.51 ms)    1.1 ms   4.19 ms   4.81 ms
-prisma       1.49 ms/iter     (1.42 ms … 3.57 ms)   1.46 ms   3.01 ms   3.16 ms
+b3         175.84 µs/iter   (158.25 µs … 1.87 ms) 172.86 µs 226.94 µs 292.24 µs
+b3:p       163.81 µs/iter (152.45 µs … 875.27 µs) 162.14 µs 184.53 µs 214.05 µs
+drizzle    161.11 µs/iter   (134.67 µs … 2.27 ms) 152.66 µs 736.49 µs 881.99 µs
+drizzle:p  129.47 µs/iter (117.19 µs … 840.73 µs) 125.45 µs 258.74 µs 518.51 µs
+knex        212.5 µs/iter   (182.68 µs … 1.66 ms) 209.57 µs 421.85 µs   1.05 ms
+kysely     187.39 µs/iter    (165.9 µs … 1.77 ms) 182.72 µs 337.62 µs 745.12 µs
+mikro        1.19 ms/iter   (866.38 µs … 3.92 ms)   1.17 ms   3.63 ms   3.66 ms
+typeorm    821.28 µs/iter   (652.67 µs … 2.44 ms) 880.12 µs   1.72 ms   1.85 ms
+prisma     777.09 µs/iter    (667.21 µs … 1.5 ms) 790.74 µs   1.21 ms    1.4 ms
 
 summary for select * from customer
   drizzle:p
-   1.24x faster than b3:p
-   1.28x faster than drizzle
-   1.35x faster than b3
-   1.52x faster than kysely
+   1.24x faster than drizzle
+   1.27x faster than b3:p
+   1.36x faster than b3
+   1.45x faster than kysely
    1.64x faster than knex
-   6.08x faster than typeorm
-   7.11x faster than prisma
-   10.1x faster than mikro
+   6x faster than prisma
+   6.34x faster than typeorm
+   9.19x faster than mikro
 
 • select * from customer where id = ?
 ------------------------------------------------- -----------------------------
-b3           2.77 ms/iter     (2.67 ms … 3.04 ms)   2.79 ms   2.99 ms   3.04 ms
-b3:p         1.04 ms/iter     (1.01 ms … 1.69 ms)   1.05 ms   1.16 ms   1.27 ms
-drizzle      4.88 ms/iter     (4.23 ms … 7.86 ms)   4.49 ms   7.81 ms   7.86 ms
-drizzle:p  997.37 µs/iter   (970.67 µs … 2.02 ms) 990.25 µs   1.34 ms   1.37 ms
-knex         6.19 ms/iter    (4.05 ms … 17.39 ms)   8.22 ms  17.39 ms  17.39 ms
-kysely       4.31 ms/iter    (3.38 ms … 11.45 ms)   3.93 ms  11.11 ms  11.45 ms
-mikro       38.22 ms/iter  (16.41 ms … 128.86 ms)  42.72 ms 128.86 ms 128.86 ms
-typeorm     17.03 ms/iter   (11.86 ms … 48.85 ms)  18.52 ms  48.85 ms  48.85 ms
-prisma      22.37 ms/iter   (18.27 ms … 65.35 ms)  21.97 ms  65.35 ms  65.35 ms
+b3           1.17 ms/iter   (773.8 µs … 68.71 ms) 980.62 µs   1.44 ms   1.65 ms
+b3:p       352.63 µs/iter   (328.17 µs … 3.86 ms) 351.25 µs 424.83 µs 454.32 µs
+drizzle      2.05 ms/iter      (1.67 ms … 4.4 ms)   1.85 ms   3.86 ms   3.96 ms
+drizzle:p   338.7 µs/iter   (317.57 µs … 1.49 ms) 336.45 µs 695.22 µs   1.06 ms
+knex            2 ms/iter     (1.61 ms … 4.76 ms)    1.8 ms   4.51 ms   4.71 ms
+kysely       1.48 ms/iter     (1.18 ms … 6.74 ms)   1.26 ms   6.01 ms    6.6 ms
+mikro       18.49 ms/iter   (15.73 ms … 22.77 ms)  19.43 ms  22.77 ms  22.77 ms
+typeorm     12.93 ms/iter   (10.65 ms … 18.22 ms)  13.68 ms  18.22 ms  18.22 ms
+prisma      14.58 ms/iter    (12.94 ms … 17.9 ms)   15.2 ms   17.9 ms   17.9 ms
 
 summary for select * from customer where id = ?
   drizzle:p
-   1.05x faster than b3:p
-   2.77x faster than b3
-   4.32x faster than kysely
-   4.89x faster than drizzle
-   6.2x faster than knex
-   17.08x faster than typeorm
-   22.43x faster than prisma
-   38.32x faster than mikro
+   1.04x faster than b3:p
+   3.46x faster than b3
+   4.37x faster than kysely
+   5.91x faster than knex
+   6.06x faster than drizzle
+   38.17x faster than typeorm
+   43.06x faster than prisma
+   54.58x faster than mikro
 
 • select * from customer where company_name like ?
 ------------------------------------------------- -----------------------------
-b3:p         3.19 ms/iter     (2.99 ms … 5.88 ms)   3.21 ms   5.43 ms   5.88 ms
-drizzle:p    2.84 ms/iter     (2.75 ms … 3.66 ms)   2.89 ms   3.34 ms   3.66 ms
-knex         5.29 ms/iter      (4.54 ms … 9.8 ms)   5.63 ms   8.83 ms    9.8 ms
-kysely       4.57 ms/iter     (4.09 ms … 7.71 ms)   4.32 ms   7.25 ms   7.71 ms
-mikro       20.45 ms/iter    (13.3 ms … 45.28 ms)  23.04 ms  45.28 ms  45.28 ms
-typeorm     15.98 ms/iter   (11.31 ms … 43.03 ms)  16.64 ms  43.03 ms  43.03 ms
-prisma      20.42 ms/iter   (19.03 ms … 23.85 ms)  21.31 ms  23.85 ms  23.85 ms
+b3:p         1.36 ms/iter     (1.31 ms … 3.08 ms)   1.34 ms   2.28 ms   2.69 ms
+drizzle:p    1.23 ms/iter     (1.17 ms … 2.18 ms)    1.2 ms   2.09 ms    2.1 ms
+knex         2.34 ms/iter     (2.03 ms … 5.83 ms)   2.17 ms   5.12 ms   5.45 ms
+kysely          2 ms/iter     (1.77 ms … 6.31 ms)   1.85 ms   6.19 ms    6.3 ms
+mikro       14.41 ms/iter    (11.57 ms … 19.6 ms)  15.99 ms   19.6 ms   19.6 ms
+typeorm      9.53 ms/iter    (8.37 ms … 11.54 ms)   10.1 ms  11.54 ms  11.54 ms
+prisma      11.87 ms/iter   (10.82 ms … 13.42 ms)  12.25 ms  13.42 ms  13.42 ms
 
 summary for select * from customer where company_name like ?
   drizzle:p
-   1.12x faster than b3:p
-   1.61x faster than kysely
-   1.86x faster than knex
-   5.63x faster than typeorm
-   7.19x faster than prisma
-   7.2x faster than mikro
+   1.11x faster than b3:p
+   1.63x faster than kysely
+   1.91x faster than knex
+   7.76x faster than typeorm
+   9.67x faster than prisma
+   11.73x faster than mikro
 
 • "SELECT * FROM employee"
 ------------------------------------------------- -----------------------------
-b3          78.73 µs/iter    (70.13 µs … 9.14 ms)  75.13 µs  92.71 µs 123.42 µs
-b3:p        49.05 µs/iter    (45.83 µs … 6.12 ms)  48.71 µs  53.79 µs     56 µs
-drizzle      91.6 µs/iter    (75.96 µs … 2.36 ms)  83.13 µs 126.33 µs   1.17 ms
-drizzle:p   87.93 µs/iter     (75.71 µs … 5.3 ms)  81.17 µs 117.42 µs    192 µs
-knex         92.1 µs/iter    (81.29 µs … 3.87 ms)  85.75 µs 104.54 µs 176.29 µs
-kysely      83.26 µs/iter    (73.83 µs … 5.92 ms)  76.75 µs  88.42 µs 126.67 µs
-mikro      546.92 µs/iter  (329.63 µs … 16.74 ms) 410.88 µs   3.67 ms   4.28 ms
-typeorm    275.94 µs/iter   (228.04 µs … 2.19 ms) 262.25 µs 990.92 µs   1.33 ms
-prisma     387.31 µs/iter   (353.83 µs … 1.39 ms) 384.67 µs 880.58 µs   1.01 ms
+b3          37.23 µs/iter    (32.12 µs … 5.82 ms)  33.92 µs  42.59 µs  48.29 µs
+b3:p        27.84 µs/iter    (25.66 µs … 1.52 ms)  27.03 µs  34.99 µs  41.45 µs
+drizzle     45.52 µs/iter    (36.05 µs … 2.83 ms)  40.26 µs  67.26 µs 135.44 µs
+drizzle:p   21.34 µs/iter    (19.09 µs … 1.38 ms)  20.26 µs  30.68 µs  36.13 µs
+knex        46.69 µs/iter     (38.75 µs … 3.5 ms)  41.99 µs  59.75 µs  69.25 µs
+kysely         41 µs/iter    (34.27 µs … 4.31 ms)   36.8 µs  56.65 µs  62.87 µs
+mikro      336.76 µs/iter   (261.28 µs … 2.53 ms) 325.16 µs   1.98 ms   2.14 ms
+typeorm    205.88 µs/iter   (163.84 µs … 1.86 ms) 207.03 µs 648.38 µs   1.13 ms
+prisma     239.04 µs/iter   (196.81 µs … 2.35 ms) 251.38 µs 423.61 µs 478.82 µs
 
 summary for "SELECT * FROM employee"
-  b3:p
-   1.61x faster than b3
-   1.7x faster than kysely
-   1.79x faster than drizzle:p
-   1.87x faster than drizzle
-   1.88x faster than knex
-   5.63x faster than typeorm
-   7.9x faster than prisma
-   11.15x faster than mikro
+  drizzle:p
+   1.3x faster than b3:p
+   1.74x faster than b3
+   1.92x faster than kysely
+   2.13x faster than drizzle
+   2.19x faster than knex
+   9.65x faster than typeorm
+   11.2x faster than prisma
+   15.78x faster than mikro
 
 • select * from employee where id = ? left join reportee
 ------------------------------------------------- -----------------------------
-b3            794 µs/iter  (643.08 µs … 43.15 ms) 711.33 µs 998.54 µs   1.11 ms
-b3:p        171.1 µs/iter   (153.5 µs … 15.91 ms) 166.83 µs 202.38 µs    264 µs
-drizzle      1.71 ms/iter      (1.32 ms … 5.7 ms)   1.46 ms   4.74 ms   5.17 ms
-drizzle:p  203.73 µs/iter   (184.71 µs … 1.72 ms) 204.17 µs 279.58 µs 606.17 µs
-knex         2.76 ms/iter   (1.07 ms … 145.01 ms)   1.85 ms  15.89 ms   24.1 ms
-kysely       2.74 ms/iter    (1.22 ms … 45.63 ms)   2.96 ms   13.6 ms  45.63 ms
-mikro        7.22 ms/iter       (2.76 ms … 49 ms)   7.87 ms     49 ms     49 ms
-typeorm     10.28 ms/iter    (3.85 ms … 72.57 ms)  10.48 ms  72.57 ms  72.57 ms
-prisma       4.54 ms/iter    (3.44 ms … 25.41 ms)   4.09 ms  17.83 ms  25.41 ms
+b3         312.42 µs/iter  (211.26 µs … 31.35 ms) 237.32 µs 278.53 µs 464.51 µs
+b3:p        69.53 µs/iter    (63.33 µs … 1.86 ms)  66.95 µs  83.41 µs  109.8 µs
+drizzle    882.74 µs/iter   (679.55 µs … 3.31 ms) 764.24 µs    2.7 ms   2.89 ms
+drizzle:p   88.14 µs/iter    (78.73 µs … 1.68 ms)  83.22 µs 135.76 µs 606.87 µs
+knex       597.01 µs/iter   (442.96 µs … 4.35 ms) 538.56 µs   3.71 ms   3.93 ms
+kysely     609.21 µs/iter   (454.75 µs … 7.89 ms) 528.76 µs    5.9 ms   6.98 ms
+mikro        2.35 ms/iter     (1.87 ms … 4.75 ms)   2.44 ms   4.31 ms   4.57 ms
+typeorm      4.14 ms/iter     (3.12 ms … 6.62 ms)   4.58 ms   6.35 ms   6.62 ms
+prisma       2.31 ms/iter     (1.93 ms … 4.45 ms)    2.4 ms   3.69 ms   3.71 ms
 
 summary for select * from employee where id = ? left join reportee
   b3:p
-   1.19x faster than drizzle:p
-   4.64x faster than b3
-   10.02x faster than drizzle
-   15.99x faster than kysely
-   16.11x faster than knex
-   26.54x faster than prisma
-   42.22x faster than mikro
-   60.09x faster than typeorm
+   1.27x faster than drizzle:p
+   4.49x faster than b3
+   8.59x faster than knex
+   8.76x faster than kysely
+   12.7x faster than drizzle
+   33.23x faster than prisma
+   33.86x faster than mikro
+   59.49x faster than typeorm
 
 • SELECT * FROM supplier
 ------------------------------------------------- -----------------------------
-b3         119.03 µs/iter   (111.33 µs … 4.37 ms) 115.54 µs 133.08 µs 155.71 µs
-b3:p       158.13 µs/iter  (104.79 µs … 23.06 ms) 116.29 µs 602.29 µs    978 µs
-drizzle    162.13 µs/iter   (101.88 µs … 13.4 ms) 118.29 µs   1.39 ms   1.96 ms
-drizzle:p  106.31 µs/iter    (98.08 µs … 1.49 ms) 102.21 µs 128.92 µs 175.21 µs
-knex       136.85 µs/iter   (125.21 µs … 5.03 ms) 132.17 µs 179.21 µs  273.5 µs
-kysely     122.76 µs/iter    (113.5 µs … 3.36 ms) 118.13 µs 135.33 µs 161.92 µs
-mikro      723.15 µs/iter  (514.08 µs … 16.43 ms) 564.08 µs    3.7 ms   5.46 ms
-typeorm    439.33 µs/iter   (385.58 µs … 4.29 ms) 413.17 µs   1.16 ms   1.45 ms
-prisma     637.28 µs/iter   (538.75 µs … 4.98 ms) 626.63 µs   1.89 ms   2.31 ms
+b3          65.64 µs/iter    (57.63 µs … 3.93 ms)  62.19 µs  74.33 µs  82.24 µs
+b3:p         56.9 µs/iter     (52.21 µs … 2.7 ms)  55.31 µs  69.05 µs  78.93 µs
+drizzle     63.24 µs/iter    (49.94 µs … 2.42 ms)  55.58 µs  84.05 µs 427.01 µs
+drizzle:p   62.59 µs/iter    (49.65 µs … 2.36 ms)  54.86 µs  94.19 µs 395.63 µs
+knex        77.02 µs/iter    (65.45 µs … 3.32 ms)  71.72 µs  98.05 µs 120.38 µs
+kysely      70.28 µs/iter    (60.77 µs … 3.53 ms)  65.88 µs  89.05 µs 115.12 µs
+mikro      475.57 µs/iter   (369.27 µs … 3.17 ms) 440.19 µs   2.81 ms   2.94 ms
+typeorm    314.23 µs/iter      (249 µs … 2.21 ms) 308.16 µs   1.46 ms   1.57 ms
+prisma     313.94 µs/iter   (257.94 µs … 1.67 ms) 327.46 µs 585.19 µs   1.48 ms
 
 summary for SELECT * FROM supplier
-  drizzle:p
-   1.12x faster than b3
-   1.15x faster than kysely
-   1.29x faster than knex
-   1.49x faster than b3:p
-   1.53x faster than drizzle
-   4.13x faster than typeorm
-   5.99x faster than prisma
-   6.8x faster than mikro
+  b3:p
+   1.1x faster than drizzle:p
+   1.11x faster than drizzle
+   1.15x faster than b3
+   1.24x faster than kysely
+   1.35x faster than knex
+   5.52x faster than prisma
+   5.52x faster than typeorm
+   8.36x faster than mikro
 
 • select * from supplier where id = ?
 ------------------------------------------------- -----------------------------
-b3         954.29 µs/iter  (829.38 µs … 26.26 ms) 910.79 µs   1.45 ms   1.72 ms
-b3:p       406.89 µs/iter   (310.67 µs … 49.6 ms) 337.96 µs   1.05 ms   1.27 ms
-drizzle      1.51 ms/iter     (1.28 ms … 4.31 ms)   1.35 ms   3.94 ms   4.04 ms
-drizzle:p  308.28 µs/iter   (300.17 µs … 1.07 ms)    309 µs 328.75 µs 415.71 µs
-knex         1.62 ms/iter     (1.34 ms … 7.97 ms)   1.45 ms   5.29 ms   5.57 ms
-kysely       1.27 ms/iter     (1.06 ms … 9.49 ms)   1.14 ms   9.32 ms   9.41 ms
-mikro        7.43 ms/iter    (4.68 ms … 36.39 ms)    8.2 ms  36.39 ms  36.39 ms
-typeorm      4.21 ms/iter     (3.21 ms … 9.51 ms)   4.29 ms   7.47 ms   9.51 ms
-prisma       6.79 ms/iter     (5.69 ms … 32.9 ms)   6.51 ms   32.9 ms   32.9 ms
+b3         341.76 µs/iter  (243.66 µs … 62.44 ms) 265.54 µs 317.48 µs 335.32 µs
+b3:p       114.69 µs/iter   (107.09 µs … 3.32 ms) 113.66 µs 130.95 µs 141.67 µs
+drizzle    685.88 µs/iter   (506.38 µs … 3.96 ms) 550.62 µs   3.54 ms   3.74 ms
+drizzle:p  110.32 µs/iter   (97.15 µs … 13.36 ms) 103.59 µs 162.04 µs 200.33 µs
+knex       616.04 µs/iter   (485.19 µs … 4.17 ms) 532.04 µs   3.66 ms   3.81 ms
+kysely     487.89 µs/iter   (372.65 µs … 6.67 ms) 405.34 µs   5.68 ms   6.31 ms
+mikro        5.62 ms/iter     (4.76 ms … 7.63 ms)   5.94 ms   7.63 ms   7.63 ms
+typeorm      3.53 ms/iter      (2.97 ms … 5.5 ms)   3.81 ms   4.81 ms    5.5 ms
+prisma       4.61 ms/iter        (4 ms … 5.87 ms)   4.77 ms   5.75 ms   5.87 ms
 
 summary for select * from supplier where id = ?
   drizzle:p
-   1.32x faster than b3:p
+   1.04x faster than b3:p
    3.1x faster than b3
-   4.13x faster than kysely
-   4.9x faster than drizzle
-   5.26x faster than knex
-   13.64x faster than typeorm
-   22.03x faster than prisma
-   24.1x faster than mikro
+   4.42x faster than kysely
+   5.58x faster than knex
+   6.22x faster than drizzle
+   31.98x faster than typeorm
+   41.76x faster than prisma
+   50.95x faster than mikro
 
 • SELECT * FROM product
 ------------------------------------------------- -----------------------------
-b3         202.31 µs/iter   (195.71 µs … 3.34 ms) 199.46 µs 210.63 µs 213.67 µs
-b3:p       201.24 µs/iter (196.96 µs … 678.96 µs) 201.08 µs  210.5 µs  212.5 µs
-drizzle    172.76 µs/iter   (161.04 µs … 1.28 ms) 167.42 µs 205.58 µs  952.5 µs
-drizzle:p   135.9 µs/iter (131.08 µs … 555.17 µs) 134.04 µs 148.92 µs 476.67 µs
-knex       214.49 µs/iter   (205.13 µs … 2.07 ms) 212.21 µs 232.71 µs 254.79 µs
-kysely     205.24 µs/iter   (195.96 µs … 2.61 ms) 203.29 µs 217.96 µs 237.38 µs
-mikro        2.26 ms/iter    (1.49 ms … 18.36 ms)   1.82 ms   7.61 ms  16.28 ms
-typeorm    819.54 µs/iter   (760.58 µs … 1.76 ms) 799.96 µs   1.37 ms   1.52 ms
-prisma       1.24 ms/iter     (1.19 ms … 2.69 ms)   1.22 ms   2.17 ms    2.4 ms
+b3         122.95 µs/iter   (113.26 µs … 2.68 ms) 119.41 µs 139.29 µs 165.72 µs
+b3:p       112.45 µs/iter    (107.21 µs … 2.7 ms) 110.42 µs 124.98 µs 131.42 µs
+drizzle    104.95 µs/iter    (89.34 µs … 1.97 ms)  98.29 µs 301.03 µs 893.18 µs
+drizzle:p    83.4 µs/iter  (77.26 µs … 910.34 µs)  80.35 µs  99.66 µs 494.41 µs
+knex       134.12 µs/iter   (119.37 µs … 2.99 ms) 129.96 µs 200.77 µs 237.69 µs
+kysely     126.47 µs/iter   (115.04 µs … 3.36 ms) 122.89 µs 142.59 µs 160.67 µs
+mikro        1.21 ms/iter   (914.2 µs … 14.08 ms)   1.05 ms    3.8 ms   4.43 ms
+typeorm    500.31 µs/iter   (435.42 µs … 1.63 ms)  496.6 µs   1.08 ms   1.15 ms
+prisma     570.67 µs/iter   (515.54 µs … 1.09 ms) 578.63 µs 893.79 µs   1.02 ms
 
 summary for SELECT * FROM product
   drizzle:p
-   1.27x faster than drizzle
-   1.48x faster than b3:p
-   1.49x faster than b3
-   1.51x faster than kysely
-   1.58x faster than knex
-   6.03x faster than typeorm
-   9.09x faster than prisma
-   16.66x faster than mikro
+   1.26x faster than drizzle
+   1.35x faster than b3:p
+   1.47x faster than b3
+   1.52x faster than kysely
+   1.61x faster than knex
+   6x faster than typeorm
+   6.84x faster than prisma
+   14.45x faster than mikro
 
 • SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?
 ------------------------------------------------- -----------------------------
-b3           3.91 ms/iter      (3.68 ms … 4.4 ms)   3.98 ms   4.27 ms    4.4 ms
-b3:p       582.85 µs/iter (562.17 µs … 737.63 µs) 589.96 µs 648.63 µs 668.33 µs
-drizzle      7.73 ms/iter    (6.73 ms … 11.41 ms)    8.5 ms  11.41 ms  11.41 ms
-drizzle:p  592.66 µs/iter   (571.38 µs … 1.33 ms) 594.96 µs 667.67 µs 700.29 µs
-knex         6.39 ms/iter    (5.32 ms … 11.41 ms)   6.96 ms  11.41 ms  11.41 ms
-kysely       6.54 ms/iter     (5.64 ms … 14.6 ms)   5.98 ms   14.6 ms   14.6 ms
-mikro        13.4 ms/iter   (10.55 ms … 22.24 ms)  16.06 ms  22.24 ms  22.24 ms
-typeorm      18.4 ms/iter   (13.38 ms … 66.24 ms)   18.9 ms  66.24 ms  66.24 ms
-prisma      17.05 ms/iter   (15.36 ms … 53.48 ms)  16.45 ms  53.48 ms  53.48 ms
+b3           1.32 ms/iter     (1.05 ms … 1.92 ms)   1.46 ms   1.53 ms   1.54 ms
+b3:p       193.64 µs/iter (118.26 µs … 211.35 ms) 125.76 µs 212.96 µs  219.2 µs
+drizzle      4.01 ms/iter     (3.16 ms … 6.43 ms)   4.71 ms      6 ms   6.43 ms
+drizzle:p   139.7 µs/iter   (129.13 µs … 1.65 ms) 139.75 µs 156.73 µs 163.37 µs
+knex         3.01 ms/iter      (2.31 ms … 7.7 ms)   2.73 ms   7.14 ms    7.7 ms
+kysely       2.81 ms/iter    (2.14 ms … 12.73 ms)   2.31 ms  11.91 ms  12.73 ms
+mikro       12.43 ms/iter   (10.82 ms … 14.21 ms)  13.18 ms  14.21 ms  14.21 ms
+typeorm     12.57 ms/iter   (10.35 ms … 15.24 ms)   13.1 ms  15.24 ms  15.24 ms
+prisma      12.43 ms/iter   (10.44 ms … 16.25 ms)  12.92 ms  16.25 ms  16.25 ms
 
 summary for SELECT * FROM product LEFT JOIN supplier WHERE product.id = ?
-  b3:p
-   1.02x faster than drizzle:p
-   6.71x faster than b3
-   10.97x faster than knex
-   11.22x faster than kysely
-   13.26x faster than drizzle
-   22.99x faster than mikro
-   29.24x faster than prisma
-   31.56x faster than typeorm
+  drizzle:p
+   1.39x faster than b3:p
+   9.42x faster than b3
+   20.09x faster than kysely
+   21.52x faster than knex
+   28.73x faster than drizzle
+   88.95x faster than prisma
+   88.97x faster than mikro
+   90x faster than typeorm
 
 • SELECT * FROM product WHERE product.name LIKE ?
 ------------------------------------------------- -----------------------------
-b3           3.41 ms/iter    (3.15 ms … 22.55 ms)   3.33 ms   3.49 ms  22.55 ms
-b3:p         2.58 ms/iter    (2.38 ms … 18.65 ms)   2.54 ms   2.97 ms   3.01 ms
-drizzle      3.44 ms/iter     (3.11 ms … 6.29 ms)   3.23 ms   6.28 ms   6.29 ms
-drizzle:p     2.4 ms/iter     (2.22 ms … 4.12 ms)   2.42 ms   3.66 ms    3.8 ms
-knex         4.43 ms/iter        (3.94 ms … 9 ms)   4.41 ms   8.37 ms      9 ms
-kysely       3.85 ms/iter    (3.53 ms … 10.96 ms)   3.65 ms  10.82 ms  10.96 ms
-mikro       19.66 ms/iter    (12.86 ms … 87.7 ms)  19.51 ms   87.7 ms   87.7 ms
-typeorm     14.94 ms/iter   (10.19 ms … 42.67 ms)  16.93 ms  42.67 ms  42.67 ms
-prisma      17.71 ms/iter   (16.55 ms … 20.67 ms)   18.6 ms  20.67 ms  20.67 ms
+b3           1.34 ms/iter    (1.19 ms … 26.14 ms)   1.23 ms   1.58 ms  19.78 ms
+b3:p         1.07 ms/iter  (971.48 µs … 22.57 ms)   1.02 ms   1.62 ms   1.83 ms
+drizzle      1.55 ms/iter     (1.15 ms … 6.23 ms)   1.33 ms    5.9 ms   6.18 ms
+drizzle:p   908.6 µs/iter   (863.15 µs … 2.04 ms) 894.45 µs   1.72 ms   1.86 ms
+knex         2.05 ms/iter     (1.66 ms … 8.69 ms)   1.83 ms   7.39 ms   7.82 ms
+kysely       1.67 ms/iter    (1.39 ms … 10.22 ms)   1.48 ms    7.7 ms   9.97 ms
+mikro       13.16 ms/iter   (11.31 ms … 15.57 ms)  13.84 ms  15.57 ms  15.57 ms
+typeorm      8.19 ms/iter    (7.25 ms … 10.15 ms)   8.38 ms  10.15 ms  10.15 ms
+prisma      11.12 ms/iter    (10.09 ms … 14.2 ms)  11.36 ms   14.2 ms   14.2 ms
 
 summary for SELECT * FROM product WHERE product.name LIKE ?
   drizzle:p
-   1.08x faster than b3:p
-   1.42x faster than b3
-   1.43x faster than drizzle
-   1.61x faster than kysely
-   1.85x faster than knex
-   6.24x faster than typeorm
-   7.39x faster than prisma
-   8.2x faster than mikro
+   1.17x faster than b3:p
+   1.47x faster than b3
+   1.71x faster than drizzle
+   1.84x faster than kysely
+   2.26x faster than knex
+   9.01x faster than typeorm
+   12.24x faster than prisma
+   14.48x faster than mikro
 
 • select all order with sum and count
 ------------------------------------------------- -----------------------------
-b3         135.36 ms/iter (132.14 ms … 146.24 ms) 136.87 ms 146.24 ms 146.24 ms
-b3:p       133.72 ms/iter (131.62 ms … 136.58 ms) 135.51 ms 136.58 ms 136.58 ms
-drizzle    154.99 ms/iter (152.08 ms … 160.94 ms) 156.68 ms 160.94 ms 160.94 ms
-drizzle:p   155.2 ms/iter  (152.68 ms … 157.9 ms) 157.32 ms  157.9 ms  157.9 ms
-knex       134.18 ms/iter (131.29 ms … 138.22 ms) 135.37 ms 138.22 ms 138.22 ms
-kysely     135.64 ms/iter  (134.1 ms … 136.98 ms) 136.75 ms 136.98 ms 136.98 ms
-typeorm       7.81 s/iter       (7.61 s … 8.43 s)     7.9 s    8.43 s    8.43 s
-prisma        3.74 s/iter       (3.67 s … 3.83 s)    3.77 s    3.83 s    3.83 s
+drizzle:p  111.93 ms/iter (110.23 ms … 115.02 ms) 112.17 ms 115.02 ms 115.02 ms
+drizzle    112.95 ms/iter (111.21 ms … 115.79 ms) 114.17 ms 115.79 ms 115.79 ms
+b3         107.52 ms/iter (106.09 ms … 114.26 ms) 107.62 ms 114.26 ms 114.26 ms
+b3:p       107.75 ms/iter (106.91 ms … 109.34 ms) 108.14 ms 109.34 ms 109.34 ms
+knex       108.63 ms/iter (107.11 ms … 110.21 ms) 109.04 ms 110.21 ms 110.21 ms
+kysely     108.73 ms/iter  (107.57 ms … 111.3 ms) 109.42 ms  111.3 ms  111.3 ms
+typeorm       6.55 s/iter       (6.44 s … 6.82 s)    6.63 s    6.82 s    6.82 s
+prisma        4.44 s/iter       (4.35 s … 4.58 s)    4.48 s    4.58 s    4.58 s
 
 summary for select all order with sum and count
-  b3:p
-   1x faster than knex
-   1.01x faster than b3
+  b3
+   1x faster than b3:p
+   1.01x faster than knex
    1.01x faster than kysely
-   1.16x faster than drizzle
-   1.16x faster than drizzle:p
-   27.93x faster than prisma
-   58.38x faster than typeorm
+   1.04x faster than drizzle:p
+   1.05x faster than drizzle
+   41.25x faster than prisma
+   60.93x faster than typeorm
 
 • SELECT * FROM order_detail WHERE order_id = ?
 ------------------------------------------------- -----------------------------
-b3          31.15 ms/iter    (28.8 ms … 40.32 ms)  30.85 ms  40.32 ms  40.32 ms
-b3:p        25.97 ms/iter   (25.27 ms … 29.34 ms)  26.05 ms  29.34 ms  29.34 ms
-drizzle     31.68 ms/iter   (28.27 ms … 46.73 ms)  31.31 ms  46.73 ms  46.73 ms
-drizzle:p   22.47 ms/iter    (21.71 ms … 25.7 ms)  22.58 ms   25.7 ms   25.7 ms
-knex        34.01 ms/iter   (33.53 ms … 35.04 ms)  34.06 ms  35.04 ms  35.04 ms
-kysely      34.67 ms/iter   (33.38 ms … 35.53 ms)  34.89 ms  35.53 ms  35.53 ms
-mikro      129.41 ms/iter  (124.6 ms … 135.78 ms) 130.88 ms 135.78 ms 135.78 ms
-mikro:2     63.65 ms/iter    (61.55 ms … 66.7 ms)  64.46 ms   66.7 ms   66.7 ms
-typeorm    105.37 ms/iter (103.93 ms … 107.96 ms) 106.49 ms 107.96 ms 107.96 ms
-prisma      90.68 ms/iter  (87.74 ms … 108.28 ms)  89.67 ms 108.28 ms 108.28 ms
+b3          24.38 ms/iter   (21.64 ms … 30.85 ms)     25 ms  30.85 ms  30.85 ms
+b3:p        20.02 ms/iter   (18.97 ms … 21.07 ms)  20.29 ms  21.07 ms  21.07 ms
+drizzle     26.44 ms/iter    (25.36 ms … 30.3 ms)  26.73 ms   30.3 ms   30.3 ms
+drizzle:p   17.47 ms/iter   (16.68 ms … 19.37 ms)  17.88 ms  19.37 ms  19.37 ms
+knex        27.32 ms/iter   (25.87 ms … 28.93 ms)  28.14 ms  28.93 ms  28.93 ms
+kysely      28.23 ms/iter   (25.24 ms … 31.03 ms)  28.69 ms  31.03 ms  31.03 ms
+mikro      116.09 ms/iter (113.54 ms … 117.85 ms) 117.21 ms 117.85 ms 117.85 ms
+mikro:2     59.74 ms/iter   (55.68 ms … 71.14 ms)  60.56 ms  71.14 ms  71.14 ms
+typeorm     96.83 ms/iter  (86.24 ms … 108.39 ms) 101.31 ms 108.39 ms 108.39 ms
+prisma      80.01 ms/iter   (76.81 ms … 90.38 ms)  80.15 ms  90.38 ms  90.38 ms
 
 summary for SELECT * FROM order_detail WHERE order_id = ?
   drizzle:p
-   1.16x faster than b3:p
-   1.39x faster than b3
-   1.41x faster than drizzle
-   1.51x faster than knex
-   1.54x faster than kysely
-   2.83x faster than mikro:2
-   4.04x faster than prisma
-   4.69x faster than typeorm
-   5.76x faster than mikro
+   1.15x faster than b3:p
+   1.4x faster than b3
+   1.51x faster than drizzle
+   1.56x faster than knex
+   1.62x faster than kysely
+   3.42x faster than mikro:2
+   4.58x faster than prisma
+   5.54x faster than typeorm
+   6.64x faster than mikro
 ```
